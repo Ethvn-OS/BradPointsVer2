@@ -7,10 +7,27 @@ import { LuKeyRound } from 'react-icons/lu';
 import { Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
+import axios from 'axios';
 
 const Signup = () => {
 
   const [showPassword, setPassword] = useState(false);
+
+  // para sa backend stuff
+  const [values, setValues] = useState({
+    username: '',
+    email: '',
+    password: ''
+  })
+
+  const handleChanges = (e) => {
+    setValues({...values, [e.target.name]: [e.target.value]})
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await axios.post('http://localhost:8080')
+  }
 
   return (
     <>
@@ -32,7 +49,7 @@ const Signup = () => {
             <img src={logo} alt="BradPoints" className="w-16 h-16 object-cover mb-4" />
             <h2 className="text-4xl font-bold mb-8 text-br-orange text-work-sans">Sign-Up</h2>
 
-            <form className='flex flex-col justify-center items-center w-full'>
+            <form className='flex flex-col justify-center items-center w-full' onSubmit={handleSubmit}>
               <div className="mb-4 w-full flex flex-col justify-center items-center px-12 gap-6">
 
                 {/* username */}
@@ -41,7 +58,7 @@ const Signup = () => {
                   <input
                     type="text"
                     id="username"
-                    name="email"
+                    name="username" onChange={handleChanges}
                     placeholder="username"
                     className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300 text-work-sans"
                   />
@@ -53,7 +70,7 @@ const Signup = () => {
                   <input
                     type="email"
                     id="email"
-                    name="email"
+                    name="email" onChange={handleChanges}
                     placeholder="email"
                     className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300 text-work-sans"
                   />
@@ -65,7 +82,7 @@ const Signup = () => {
                   <input
                     type= {showPassword ? "text" : "password"}
                     id="password"
-                    name="password"
+                    name="password" onChange={handleChanges}
                     placeholder="password"
                     className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300 text-work-sans"
                   />

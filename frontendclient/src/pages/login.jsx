@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import cover from '../assets/images/assorted.jpg';
 import logo from '../assets/images/BradPointsLogo.png';
 import { MdOutlineEmail } from "react-icons/md";
@@ -10,6 +11,17 @@ import { motion } from "framer-motion";
 const Login = () => {
 
   const [showPassword, setPassword] = useState(false);
+
+  /* Just a TEST FOR BACKEND STUFF HEHE
+  const fetchAPI = async () => {
+    const response = await axios.get("http://localhost:8080/api");
+    console.log(response.data.fruits);
+  };
+
+  useEffect(() => {
+    fetchAPI();
+  }, []);
+  */
 
   return (
     <>
