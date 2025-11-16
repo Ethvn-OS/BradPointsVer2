@@ -6,6 +6,7 @@ import { MdOutlineEmail } from "react-icons/md";
 import { LuKeyRound } from 'react-icons/lu';
 import { Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const Signup = () => {
 
@@ -14,7 +15,11 @@ const Signup = () => {
   return (
     <>
     <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="flex flex-row items-center justify-center bg-white rounded-3xl h-140 max-w-4xl w-full shadow-2xl overflow-hidden border-l-12 border-orange-500">
+      <motion.div 
+      initial={{ opacity: 0, y: 50 }}      
+      animate={{ opacity: 1, y: 0 }}        
+      transition={{ duration: 0.8, ease: "easeOut" }} 
+      className="flex flex-row items-center justify-center bg-white rounded-3xl h-140 max-w-4xl w-full shadow-2xl overflow-hidden border-l-12 border-orange-500">
         <div className="flex flex-row w-full h-full">
 
           {/* Left Side */}
@@ -25,7 +30,7 @@ const Signup = () => {
           {/* Right Side */}
           <div className="w-3/5 px-8 py-16 flex flex-col items-center justify-center">
             <img src={logo} alt="BradPoints" className="w-16 h-16 object-cover mb-4" />
-            <h2 className="text-4xl font-bold mb-8 text-br-orange text-work-sans">Login</h2>
+            <h2 className="text-4xl font-bold mb-8 text-br-orange text-work-sans">Sign-Up</h2>
 
             <form className='flex flex-col justify-center items-center w-full'>
               <div className="mb-4 w-full flex flex-col justify-center items-center px-12 gap-6">
@@ -38,7 +43,7 @@ const Signup = () => {
                     id="username"
                     name="email"
                     placeholder="username"
-                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-br-gray text-work-sans"
+                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300 text-work-sans"
                   />
                 </div>
 
@@ -50,7 +55,7 @@ const Signup = () => {
                     id="email"
                     name="email"
                     placeholder="email"
-                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-br-gray text-work-sans"
+                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300 text-work-sans"
                   />
                 </div>
 
@@ -62,7 +67,7 @@ const Signup = () => {
                     id="password"
                     name="password"
                     placeholder="password"
-                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-br-gray text-work-sans"
+                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300 text-work-sans"
                   />
                   <button
                     type='button'
@@ -77,8 +82,10 @@ const Signup = () => {
             </form>
             
             <div className='w-full px-12 mt-8 flex flex-col gap-6 justify-center items-center'>
-              <button className='flex items-center justify-center w-full py-2 text-work-sans font-bold text-white text-lg bg-br-orange rounded-lg'>
-                LOGIN
+              <button 
+              type='submit'
+              className='flex items-center justify-center w-full py-2 text-work-sans font-bold text-white text-lg bg-br-orange rounded-lg transform hover:scale-105 transition duration-300 ease-out cursor-pointer'>
+                SIGN-UP
               </button>
               <p className='text-work-sans text-xs text-black'>Have an account already? 
                 <Link to="/login" className='text-br-orange hover:underline'> Login</Link>
@@ -86,7 +93,7 @@ const Signup = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
     </>
   );

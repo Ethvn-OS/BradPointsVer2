@@ -5,6 +5,7 @@ import { MdOutlineEmail } from "react-icons/md";
 import { LuKeyRound } from 'react-icons/lu';
 import { Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const Login = () => {
 
@@ -13,7 +14,11 @@ const Login = () => {
   return (
     <>
     <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="flex flex-row items-center justify-center bg-white rounded-3xl h-120 max-w-4xl w-full shadow-2xl overflow-hidden border-l-12 border-orange-500">
+      <motion.div 
+      initial={{ opacity: 0, y: 50 }}      
+      animate={{ opacity: 1, y: 0 }} 
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="flex flex-row items-center justify-center bg-white rounded-3xl h-120 max-w-4xl w-full shadow-2xl overflow-hidden border-l-12 border-orange-500">
         <div className="flex flex-row w-full h-full">
 
           {/* Left Side */}
@@ -36,7 +41,7 @@ const Login = () => {
                     id="email"
                     name="email"
                     placeholder="email"
-                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-br-gray text-work-sans"
+                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300 text-work-sans"
                   />
                 </div>
 
@@ -48,7 +53,7 @@ const Login = () => {
                     id="password"
                     name="password"
                     placeholder="password"
-                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-br-gray text-work-sans"
+                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300   text-work-sans"
                   />
                   <button
                     type='button'
@@ -63,7 +68,9 @@ const Login = () => {
             </form>
             
             <div className='w-full px-12 mt-8 flex flex-col gap-6 justify-center items-center'>
-              <button className='flex items-center justify-center w-full py-2 text-work-sans font-bold text-white text-lg bg-br-orange rounded-lg'>
+              <button 
+              type='submit'
+              className='flex items-center justify-center w-full py-2 text-work-sans font-bold text-white text-lg bg-br-orange rounded-lg transform hover:scale-105 transition duration-300 ease-out cursor-pointer'>
                 LOGIN
               </button>
               <p className='text-work-sans text-xs text-black'>Dont have an account yet? 
@@ -72,7 +79,7 @@ const Login = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
     </>
   );
