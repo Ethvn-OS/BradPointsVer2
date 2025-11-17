@@ -1,15 +1,15 @@
-import authRouter from './routes/authRoutes';
+import authRouter from './routes/authRoutes.js'
+import express from 'express'
+import cors from 'cors'
 
-const express = require('express');
 const app = express();
-const cors = require('cors');
 const corsOptions = {
     origin: ["http://localhost:5173"]
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/auth', authRegister);
+app.use('/auth', authRouter);
 
 app.listen(process.env.PORT, () => {
     console.log('Server started on port 8080');

@@ -4,7 +4,7 @@ import logo from '../assets/images/BradPointsLogo.png';
 import { FaRegUser } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
 import { LuKeyRound } from 'react-icons/lu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
 import axios from 'axios';
@@ -20,22 +20,32 @@ const Signup = () => {
     password: ''
   })
 
+  const navigate = useNavigate();
+
   const handleChanges = (e) => {
-    setValues({...values, [e.target.name]: [e.target.value]})
+    setValues({...values, [e.target.name]: e.target.value})
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post('http://localhost:8080')
+    try {
+      const response = await axios.post('http://localhost:8080/auth/signup', values);
+      console.log(response);
+      if (response.status === 201) {
+        navigate('/login');
+      }
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   return (
     <>
     <div className="min-h-screen flex items-center justify-center p-6">
-      <motion.div 
-      initial={{ opacity: 0, y: 50 }}      
-      animate={{ opacity: 1, y: 0 }}        
-      transition={{ duration: 0.8, ease: "easeOut" }} 
+      <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
       className="flex flex-row items-center justify-center bg-white rounded-3xl h-140 max-w-4xl w-full shadow-2xl overflow-hidden border-l-12 border-orange-500">
         <div className="flex flex-row w-full h-full">
 
@@ -96,18 +106,18 @@ const Signup = () => {
                 </div>
 
               </div>
+              <div className='w-full px-12 mt-8 flex flex-col gap-6 justify-center items-center'>
+                <button 
+                type='submit'
+                className='flex items-center justify-center w-full py-2 text-work-sans font-bold text-white text-lg bg-br-orange rounded-lg transform hover:scale-105 transition duration-300 ease-out cursor-pointer'>
+                  SIGN-UP
+                </button>
+                <p className='text-work-sans text-xs text-black'>Have an account already? 
+                  <Link to="/login" className='text-br-orange hover:underline'> Login</Link>
+                </p>
+              </div>
             </form>
-            
-            <div className='w-full px-12 mt-8 flex flex-col gap-6 justify-center items-center'>
-              <button 
-              type='submit'
-              className='flex items-center justify-center w-full py-2 text-work-sans font-bold text-white text-lg bg-br-orange rounded-lg transform hover:scale-105 transition duration-300 ease-out cursor-pointer'>
-                SIGN-UP
-              </button>
-              <p className='text-work-sans text-xs text-black'>Have an account already? 
-                <Link to="/login" className='text-br-orange hover:underline'> Login</Link>
-              </p>
-            </div>
+
           </div>
         </div>
       </motion.div>

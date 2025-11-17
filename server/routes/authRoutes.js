@@ -1,11 +1,122 @@
 // for registration and login
 
-import express from 'express';
+import express from 'express'
+import { connectToDatabase } from '../lib/db.js';
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 const router = express.Router();
 
-router.post('/signup', (req, res) => {
+router.post('/signup', async (req, res) => {
+    const {username, email, password} = req.body;
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query('SELECT id FROM users WHERE (user_name = ? OR email = ?) AND isDeleted = 0 LIMIT 1', [username, email]);
 
+        if(rows.length > 0) {
+            return res.status(409).json({ message : "Username or email already taken. Please choose another."});
+        }
+
+        const hashPassword = await bcrypt.hash(password, 10);
+
+        await db.query('INSERT INTO users (user_name, email, password) VALUES (?, ?, ?)', [username, email, hashPassword]);
+        await db.query('INSERT INTO customers (user_id) SELECT id FROM users WHERE user_name = ?', [username]);
+
+        res.status(201).json({message : "User created sucessfully!"});
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
 });
+
+router.post('/login', async (req, res) => {
+    const {email, password} = req.body;
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query("SELECT u.id AS user_id, u.user_name, u.password, u.usertype_id, u.email, c.points AS points FROM users u LEFT JOIN customers c ON c.user_id = u.id AND c.isDeleted = 0 WHERE u.email = ? AND u.isDeleted = 0 LIMIT 1", [email]);
+
+        if(rows.length === 0) {
+            return res.status(404).json({ message : "User does not exist."});
+        }
+
+        const isMatch = await bcrypt.compare(password, rows[0].password);
+
+        if (!isMatch) {
+            return res.status(401).json({ message: "Wrong password"});
+        }
+
+        const token = jwt.sign({id: rows[0].user_id}, process.env.JWT_KEY, {expiresIn: '3h'});
+
+        res.status(201).json({token: token,
+                              message: "Successfully logged in!",
+                              usertype: rows[0].usertype_id
+        });
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
+
+const verifyToken = async (req, res, next) => {
+    try {
+        const token = req.headers['authorization'].split(' ')[1];
+
+        if (!token) {
+            return res.status(403).json({message: "No Token Provided"});
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_KEY); //makuha nato ang id ari
+        req.userId = decoded.id;
+        next();
+    } catch (err) {
+        return res.status(500).json({message: "server error"});
+    }
+}
+
+router.get('/home', verifyToken, async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query("SELECT u.id AS user_id, u.user_name, u.password, u.usertype_id, u.email, c.points AS points FROM users u LEFT JOIN customers c ON c.user_id = u.id AND c.isDeleted = 0 WHERE user_id = ? AND u.isDeleted = 0 LIMIT 1", [req.userId]);
+
+        if(rows.length === 0) {
+            return res.status(404).json({ message : "User does not exist."});
+        }
+
+        return res.status(201).json({user: rows[0]});
+
+    } catch (err) {
+        return res.status(500).json({message: "server error"});
+    }
+})
+
+router.get('/cashierhome', verifyToken, async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query("SELECT u.id AS user_id, u.user_name, u.password, u.usertype_id, u.email, c.points AS points FROM users u LEFT JOIN customers c ON c.user_id = u.id AND c.isDeleted = 0 WHERE user_id = ? AND u.isDeleted = 0 LIMIT 1", [req.userId]);
+
+        if(rows.length === 0) {
+            return res.status(404).json({ message : "User does not exist."});
+        }
+
+        return res.status(201).json({user: rows[0]});
+
+    } catch (err) {
+        return res.status(500).json({message: "server error"});
+    }
+})
+
+router.get('/dashboard', verifyToken, async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query("SELECT u.id AS user_id, u.user_name, u.password, u.usertype_id, u.email, c.points AS points FROM users u LEFT JOIN customers c ON c.user_id = u.id AND c.isDeleted = 0 WHERE user_id = ? AND u.isDeleted = 0 LIMIT 1", [req.userId]);
+
+        if(rows.length === 0) {
+            return res.status(404).json({ message : "User does not exist."});
+        }
+
+        return res.status(201).json({user: rows[0]});
+
+    } catch (err) {
+        return res.status(500).json({message: "server error"});
+    }
+})
 
 export default router;

@@ -1,14 +1,11 @@
 import React, { useEffect } from 'react'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
 
-const Home = () => {
-
+const CashierHome = () => {
     const fetchUser = async () => {
         const navigate = useNavigate();
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8080/auth/home', {
+            const response = await axios.get('http://localhost:8080/auth/cashierhome', {
                 headers: {
                     "Authorization" : `Bearer ${token}`
                 }
@@ -28,8 +25,8 @@ const Home = () => {
     }, [])
 
     return (
-        <div className='text-3x1 text-blue-500'>Home</div>
+        <div className='text-3x1 text-blue-500'>Cashier</div>
     )
 }
 
-export default Home
+export default CashierHome

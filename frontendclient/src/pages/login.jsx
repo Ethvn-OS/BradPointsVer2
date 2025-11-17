@@ -4,13 +4,43 @@ import cover from '../assets/images/assorted.jpg';
 import logo from '../assets/images/BradPointsLogo.png';
 import { MdOutlineEmail } from "react-icons/md";
 import { LuKeyRound } from 'react-icons/lu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const Login = () => {
 
   const [showPassword, setPassword] = useState(false);
+
+  const [values, setValues] = useState({
+    email: '',
+    password: ''
+  });
+
+  const navigate = useNavigate();
+
+  const handleChanges = (e) => {
+    setValues({...values, [e.target.name]: e.target.value})
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8080/auth/login', values);
+      console.log(response);
+      if (response.status === 201) {
+        const { token, usertype } = response.data;
+        localStorage.setItem('token', token);
+
+        if (usertype === 1) navigate('/cashierhome');
+        else if (usertype === 2) navigate('/home');
+        else if (usertype === 3) navigate('/dashboard');
+        else navigate('/home'); // fallback
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   /* Just a TEST FOR BACKEND STUFF HEHE
   const fetchAPI = async () => {
@@ -43,7 +73,7 @@ const Login = () => {
             <img src={logo} alt="BradPoints" className="w-16 h-16 object-cover mb-4" />
             <h2 className="text-4xl font-bold mb-8 text-br-orange text-work-sans">Login</h2>
 
-            <form className='flex flex-col justify-center items-center w-full'>
+            <form className='flex flex-col justify-center items-center w-full' onSubmit={handleSubmit}>
               <div className="mb-4 w-full flex flex-col justify-center items-center px-12 gap-6">
                 {/* email */}
                 <div className="relative w-full">
@@ -51,7 +81,7 @@ const Login = () => {
                   <input
                     type="email"
                     id="email"
-                    name="email"
+                    name="email" onChange={handleChanges}
                     placeholder="email"
                     className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300 text-work-sans"
                   />
@@ -63,7 +93,7 @@ const Login = () => {
                   <input
                     type= {showPassword ? "text" : "password"}
                     id="password"
-                    name="password"
+                    name="password" onChange={handleChanges}
                     placeholder="password"
                     className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300   text-work-sans"
                   />
@@ -77,18 +107,17 @@ const Login = () => {
                 </div>
 
               </div>
+              <div className='w-full px-12 mt-8 flex flex-col gap-6 justify-center items-center'>
+                <button
+                type='submit'
+                className='flex items-center justify-center w-full py-2 text-work-sans font-bold text-white text-lg bg-br-orange rounded-lg transform hover:scale-105 transition duration-300 ease-out cursor-pointer'>
+                  LOGIN
+                </button>
+                <p className='text-work-sans text-xs text-black'>Dont have an account yet? 
+                  <Link to="/signup" className='text-br-orange hover:underline'> Sign up</Link>
+                </p>
+              </div>
             </form>
-            
-            <div className='w-full px-12 mt-8 flex flex-col gap-6 justify-center items-center'>
-              <button 
-              type='submit'
-              className='flex items-center justify-center w-full py-2 text-work-sans font-bold text-white text-lg bg-br-orange rounded-lg transform hover:scale-105 transition duration-300 ease-out cursor-pointer'>
-                LOGIN
-              </button>
-              <p className='text-work-sans text-xs text-black'>Dont have an account yet? 
-                <Link to="/signup" className='text-br-orange hover:underline'> Sign up</Link>
-              </p>
-            </div>
           </div>
         </div>
       </motion.div>
