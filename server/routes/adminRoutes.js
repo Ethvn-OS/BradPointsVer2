@@ -20,6 +20,7 @@ router.get('/dashboard', verifyToken, async (req, res) => {
     }
 })
 
+// dashboard page
 router.get('/vouchredem', async (req, res) => {
     try {
         const db = await connectToDatabase();
@@ -39,5 +40,8 @@ router.get('/allredem', async (req, res) => {
         return res.status(500).json({ message : err.message });
     }
 })
+
+//users page
+
 
 export default router;
