@@ -1,7 +1,8 @@
 // for registration and login
 
-import express from 'express'
 import { connectToDatabase } from '../lib/db.js';
+import { verifyToken } from '../middleware/auth.js';
+import express from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
@@ -55,55 +56,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-const verifyToken = async (req, res, next) => {
-    try {
-        const token = req.headers['authorization'].split(' ')[1];
-
-        if (!token) {
-            return res.status(403).json({message: "No Token Provided"});
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_KEY); //makuha nato ang id ari
-        req.userId = decoded.id;
-        next();
-    } catch (err) {
-        return res.status(500).json({message: "server error"});
-    }
-}
-
 router.get('/home', verifyToken, async (req, res) => {
-    try {
-        const db = await connectToDatabase();
-        const [rows] = await db.query("SELECT u.id AS user_id, u.user_name, u.password, u.usertype_id, u.email, c.points AS points FROM users u LEFT JOIN customers c ON c.user_id = u.id AND c.isDeleted = 0 WHERE user_id = ? AND u.isDeleted = 0 LIMIT 1", [req.userId]);
-
-        if(rows.length === 0) {
-            return res.status(404).json({ message : "User does not exist."});
-        }
-
-        return res.status(201).json({user: rows[0]});
-
-    } catch (err) {
-        return res.status(500).json({message: "server error"});
-    }
-})
-
-router.get('/cashierhome', verifyToken, async (req, res) => {
-    try {
-        const db = await connectToDatabase();
-        const [rows] = await db.query("SELECT u.id AS user_id, u.user_name, u.password, u.usertype_id, u.email, c.points AS points FROM users u LEFT JOIN customers c ON c.user_id = u.id AND c.isDeleted = 0 WHERE user_id = ? AND u.isDeleted = 0 LIMIT 1", [req.userId]);
-
-        if(rows.length === 0) {
-            return res.status(404).json({ message : "User does not exist."});
-        }
-
-        return res.status(201).json({user: rows[0]});
-
-    } catch (err) {
-        return res.status(500).json({message: "server error"});
-    }
-})
-
-router.get('/dashboard', verifyToken, async (req, res) => {
     try {
         const db = await connectToDatabase();
         const [rows] = await db.query("SELECT u.id AS user_id, u.user_name, u.password, u.usertype_id, u.email, c.points AS points FROM users u LEFT JOIN customers c ON c.user_id = u.id AND c.isDeleted = 0 WHERE user_id = ? AND u.isDeleted = 0 LIMIT 1", [req.userId]);
