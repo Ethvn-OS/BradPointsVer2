@@ -3,6 +3,7 @@ import { verifyToken } from '../middleware/auth.js';
 import express from 'express'
 
 const router = express.Router();
+let targetId = 20000005; // here nato i store ang id sa user nga mo order or retrieve sa ilang order
 
 router.get('/cashierhome', verifyToken, async (req, res) => {
     try {
@@ -20,6 +21,7 @@ router.get('/cashierhome', verifyToken, async (req, res) => {
     }
 })
 
+// kato ning para sa when you input your id number (sa customer) and then it will find if the customer exists or not
 router.post('/cashierhome', async (req, res) => {
     const {userId} = req.body;
     try {
@@ -30,10 +32,37 @@ router.post('/cashierhome', async (req, res) => {
             return res.status(404).json({ message: "User not found."});
         }
 
-        res.status(200).json({ message : "User located."});
+        targetId = rows[0].id;         // gi store ang information sa kani nga id number
+        return res.status(200).json({ message : "User located."});
     } catch (err) {
-        res.status(500).json(err.message);
+        return res.status(500).json(err.message);
     }
 })
+
+// fetching all products from the database
+router.get('/cashierprod', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query('SELECT p.*, category_name, points, p.isDeleted FROM products p JOIN category c ON c.id = p.category_id');
+        return res.status(201).json({ products : rows });
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+})
+
+// continue this code lang nya which will redeem a voucher
+router.post('/cashierredeem', async (req, res) => {
+    const {redeemvouch} = req.body;
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query('SELECT * FROM redemption WHERE redemption_id = ? AND user_id = ? LIMIT 1', [redeemvouch, targetId]);
+        // if ()
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+})
+
+// when a customer redeems their reward
+// insert code here lang nya
 
 export default router;

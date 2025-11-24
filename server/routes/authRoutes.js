@@ -56,20 +56,4 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/home', verifyToken, async (req, res) => {
-    try {
-        const db = await connectToDatabase();
-        const [rows] = await db.query("SELECT u.id AS user_id, u.user_name, u.password, u.usertype_id, u.email, c.points AS points FROM users u LEFT JOIN customers c ON c.user_id = u.id AND c.isDeleted = 0 WHERE user_id = ? AND u.isDeleted = 0 LIMIT 1", [req.userId]);
-
-        if(rows.length === 0) {
-            return res.status(404).json({ message : "User does not exist."});
-        }
-
-        return res.status(201).json({user: rows[0]});
-
-    } catch (err) {
-        return res.status(500).json({message: "server error"});
-    }
-})
-
 export default router;

@@ -1,6 +1,7 @@
 import authRouter from './routes/authRoutes.js'
 import cashierRouter from './routes/cashierRoutes.js'
 import adminRouter from './routes/adminRoutes.js'
+import custRouter from './routes/customerRoutes.js'
 import express from 'express'
 import cors from 'cors'
 
@@ -12,6 +13,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/auth', authRouter);
+app.use('/customer', custRouter);
 app.use('/cashier', cashierRouter); // so inig call from the frontend gamita ang localhost:8080/cashier/(insert)
 app.use('/admin', adminRouter);
 
