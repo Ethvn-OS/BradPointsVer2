@@ -1,7 +1,6 @@
 // for registration and login
 
 import { connectToDatabase } from '../lib/db.js';
-import { verifyToken } from '../middleware/auth.js';
 import express from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
