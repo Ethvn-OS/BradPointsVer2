@@ -103,7 +103,4 @@ router.post('/cashierorder', async (req, res) => {
     }
 })
 
-// when a customer redeems their reward
-// insert code here lang nya
-
 export default router;
