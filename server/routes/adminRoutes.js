@@ -91,7 +91,7 @@ router.post('/adduser', async (req, res) => {
         }
 
     } catch (err) {
-        res.status(500).json(err.message);
+        return res.status(500).json(err.message);
     }
 })
 
@@ -108,7 +108,7 @@ router.post('/updateuser', async (req, res) => {
 
         return res.status(200).json({ message : "User updated!", editedUsername : editUsername, editedEmail : editEmail });
     } catch (err) {
-        res.status(500).json(err.message);
+        return res.status(500).json(err.message);
     }
 })
 
@@ -127,23 +127,127 @@ router.post('/deleteuser', async (req, res) => {
         return res.status(200).json({ message : "User deleted!" });
 
     } catch (err) {
-        res.status(500).json(err.message);
+        return res.status(500).json(err.message);
     }
 })
 
 /*
 -> Products Page <-------------------------------------------------------------------
 */
-// insert product CRUD
+router.get('/allproducts', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query('SELECT * FROM products');
+        return res.status(201).json({ allprods : rows });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+})
+
+router.post('/createprod', async (req, res) => {
+    const {prodname, prodcategory} = req.body;
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query('SELECT id FROM products WHERE prod_name = ? AND isDeleted = 0 LIMIT 1', [prodname]);
+
+        if (rows.length > 0) {
+            return res.status(409).json({ message : "Product already exists."});
+        }
+
+        await db.query('INSERT INTO products (prod_name, category_id) VALUES (?, ?)', [prodname, prodcategory]);
+        return res.status(201).json({ message : "Product added!", prodName : prodname, prodCategory : prodcategory });
+
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
+router.post('/updateprod', async (req, res) => {
+    const {editId, editProd, editCategory} = req.body;
+    try {
+        const db = await connectToDatabase();
+        await db.query('UPDATE products SET prod_name = ?, category_id = ? WHERE id = ?', [editProd, editCategory, editId]);
+        return res.status(200).json({ message : "Product updated!" });
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+})
+
+router.post('/deleteprod', async (req, res) => {
+    const {deleteId} = req.body;
+    try {
+        const db = await connectToDatabase();
+        await db.query('UPDATE products SET isDeleted = 1 WHERE id = ?', [deleteId]);
+        return res.status(200).json({ message : "Product deleted!" });
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+})
 
 /*
 -> Rewards Page <-------------------------------------------------------------------
 */
-// insert reward CRUD
+router.get('/allrewards', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query('SELECT id, reward_name, reward_desc, reward_points, isDeleted FROM rewards');
+        return res.status(201).json({ allrewards : rows });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
+router.post('/createreward', async (req, res) => {
+    const {rewardname, rewarddesc, rewardpoints} = req.body;
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query('SELECT id FROM rewards WHERE reward_name = ? AND isDeleted = 0 LIMIT 1', [rewardname]);
+
+        if (rows.length > 0) {
+            return res.status(409).json({ message : "Reward already exists." });
+        }
+
+        await db.query('INSERT INTO rewards (reward_name, reward_desc, reward_points) VALUES (?, ?, ?)', [rewardname, rewarddesc, rewardpoints]);
+        return res.status(201).json({ message : "Reward added!", rewardName : rewardname, rewardDesc : rewarddesc, rewardPoints : rewardpoints });
+
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
+router.post('/updatereward', async (req, res) => {
+    const {editId, editrewname, editrewdesc, editrewpoints} = req.body;
+    try {
+        const db = await connectToDatabase();
+        await db.query('UPDATE rewards SET reward_name = ?, reward_desc = ?, reward_points = ? WHERE id = ?', [editrewname, editrewdesc, editrewpoints, editId]);
+        return res.status(200).json({ message : "Reward updated!" });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
+router.post('/deletereward', async (req, res) => {
+    const {deleteId} = req.body;
+    try {
+        const db = await connectToDatabase();
+        await db.query('UPDATE rewards SET isDeleted = 1 WHERE id = ?', [deleteId]);
+        return res.status(200).json({ message : "Reward deleted!" });
+    } catch (err) {
+        res.status(500).json({ message : err.message });
+    }
+})
 
 /*
 -> Feedback Page <-------------------------------------------------------------------
 */
-// insert feedback CRUD
+router.get('/allfeedback', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [rows] = await db.query('SELECT u.user_name, f.rating, f.content, f.created_at FROM feedback f JOIN users u ON u.id = f.user_id');
+        return res.status(201).json({ allfeedback : rows });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
 
 export default router;
