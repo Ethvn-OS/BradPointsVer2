@@ -3,7 +3,8 @@ import StatCard from "../components/stat-card"
 import CustomersTable from "../components/customers-table"
 import CashiersTable from "../components/cashiers-table"
 import { Users, UserCheck, Gift } from "lucide-react"
-import { useState, useMemo } from "react"
+import { useEffect, useState, useMemo } from "react"
+import axios from "axios"
 
 const customersData = [
   { username: "Ethan", email: "", points: 117 },
@@ -25,18 +26,68 @@ const cashiersData = [
 ]
 
 export default function UsersPage() {
-  const [customers, setCustomers] = useState(customersData)
-  const [cashiers, setCashiers] = useState(cashiersData)
 
-  const totalCustomers = customers.length
-  const totalCashiers = cashiers.length
-  const totalPoints = useMemo(() => customers.reduce((sum, customer) => sum + customer.points, 0), [customers])
+  const [totalActiveCustomers, setActiveCustomers] = useState(0);
+  const [totalActiveCashiers, setActiveCashiers] = useState(0);
+  const [sumPoints, setSumPoints] = useState(0);
+  const [listCustomers, setListCustomers] = useState([]);
+  const [listCashiers, setListCashiers] = useState([]);
+
+  const numOfCustomers = async () => {
+    const response = await axios.get("http://localhost:8080/admin/countallcustomers");
+    setActiveCustomers(response.data.allcust);
+    console.log(response.data.allcust);
+  }
+
+  const numOfCashiers = async () => {
+    const response = await axios.get("http://localhost:8080/admin/countallcashiers");
+    setActiveCashiers(response.data.allcash);
+    console.log(response.data.allcash);
+  }
+
+  const sumOfPoints = async () => {
+    const response = await axios.get("http://localhost:8080/admin/countallpoints");
+    setSumPoints(response.data.sumPoints);
+    console.log(response.data.sumPoints);
+  }
+
+  const listOfCustomers = async () => {
+    const response = await axios.get("http://localhost:8080/admin/allcustomers");
+    setListCustomers(response.data.allcustomers);
+    console.log(response.data.allcustomers);
+  }
+
+  const listOfCashiers = async () => {
+    const response = await axios.get("http://localhost:8080/admin/allcashiers");
+    setListCashiers(response.data.allcashiers);
+    console.log(response.data.allcashiers);
+  }
+
+  useEffect(() => {
+    numOfCustomers();
+  }, [])
+
+  useEffect(() => {
+    numOfCashiers();
+  }, [])
+
+  useEffect(() => {
+    sumOfPoints();
+  }, [])
+
+  useEffect(() => {
+    listOfCustomers();
+  }, [])
+
+  useEffect(() => {
+    listOfCashiers();
+  }, [])
 
   return (
     <div className="flex h-screen bg-amber-50">
       <Sidebar />
       <main className="flex-1 flex flex-col overflow-hidden ml-44">
-        
+
        {/* Header */}
       <div className=" border-b-2 border-red-700 px-8 py-6">
         <h1 className="text-3xl font-bold text-red-700">Users</h1>
@@ -46,18 +97,32 @@ export default function UsersPage() {
         <div className="flex-1 overflow-auto p-8 space-y-6">
           {/* Stat Cards */}
           <div className="grid grid-cols-3 gap-6">
-            <StatCard icon={<Users className="w-8 h-8 text-red-700" />} number={totalCustomers.toString()} label="Total Customers" />
-            <StatCard icon={<UserCheck className="w-8 h-8 text-red-700" />} number={totalCashiers.toString()} label="Total Cashiers" />
-            <StatCard icon={<Gift className="w-8 h-8 text-red-700" />} number={totalPoints.toString()} label="Total Points" />
+            <StatCard icon={<Users className="w-8 h-8 text-red-700" />} number={`${totalActiveCustomers.count_customers}`} label="Total Customers" />
+            <StatCard icon={<UserCheck className="w-8 h-8 text-red-700" />} number={`${totalActiveCashiers.count_cashiers}`} label="Total Cashiers" />
+            <StatCard icon={<Gift className="w-8 h-8 text-red-700" />} number={`${sumPoints.sum_points}`} label="Total Points" />
           </div>
 
           {/* Customers Table */}
-          <CustomersTable customers={customers} onCustomersChange={setCustomers} />
+          <CustomersTable customers={listCustomers} onCustomersChange={setListCustomers} />
 
           {/* Cashiers Table */}
-          <CashiersTable cashiers={cashiers} onCashiersChange={setCashiers} />
+          <CashiersTable cashiers={listCashiers} onCashiersChange={setListCashiers} />
         </div>
       </main>
     </div>
   )
 }
+
+
+
+// USED FOR TESTING FRONTEND
+/*
+
+const totalCustomers = customers.length
+const totalCashiers = cashiers.length
+const totalPoints = useMemo(() => customers.reduce((sum, customer) => sum + customer.points, 0), [customers])
+
+const [customers, setCustomers] = useState(customersData)
+const [cashiers, setCashiers] = useState(cashiersData)
+
+*/

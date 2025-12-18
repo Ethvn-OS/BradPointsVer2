@@ -34,11 +34,31 @@ router.get('/vouchredem', async (req, res) => {
     }
 })
 
+router.get('/countreward', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [countReward] = await db.query('SELECT COUNT(reward_name) AS count_reward FROM rewards WHERE isDeleted = 0');
+        return res.status(201).json({ count : countReward[0] });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
 router.get('/allredem', async (req, res) => {
     try {
         const db = await connectToDatabase();
         const [rows] = await db.query('SELECT u.user_name, r.reward_name, red.redemption_id, red.status, red.cashier_id FROM redemption red JOIN users u ON u.id = red.user_id JOIN rewards r ON r.id = red.reward_id');
         return res.status(201).json({ allredem : rows });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
+router.get('/countallredem', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [countAllRedem] = await db.query('SELECT COUNT(u.user_name) AS count_redem FROM redemption red JOIN users u ON u.id = red.user_id JOIN rewards r ON r.id = red.reward_id');
+        return res.status(201).json({ redem : countAllRedem[0] });
     } catch (err) {
         return res.status(500).json({ message : err.message });
     }
@@ -50,18 +70,48 @@ router.get('/allredem', async (req, res) => {
 router.get('/allcustomers', async (req, res) => {
     try {
         const db = await connectToDatabase();
-        const [rows] = await db.query('SELECT u.id, u.user_name, u.email, c.points, u.isDeleted FROM users u LEFT JOIN customers c ON c.user_id = u.id WHERE usertype_id = 2');
+        const [rows] = await db.query('SELECT u.id, u.user_name, u.email, c.points, u.isDeleted FROM users u LEFT JOIN customers c ON c.user_id = u.id WHERE usertype_id = 2 AND u.isDeleted = 0');
         return res.status(201).json({ allcustomers : rows });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 })
 
+router.get('/countallcustomers', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [countAllCust] = await db.query('SELECT COUNT(u.id) AS count_customers FROM users u LEFT JOIN customers c ON c.user_id = u.id WHERE usertype_id = 2 AND c.isDeleted = 0');
+        return res.status(201).json({ allcust : countAllCust[0] });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
 router.get('/allcashiers', async (req, res) => {
     try {
         const db = await connectToDatabase();
-        const [rows] = await db.query('SELECT id, user_name, email, isDeleted FROM users WHERE usertype_id = 1');
+        const [rows] = await db.query('SELECT id, user_name, email, isDeleted FROM users WHERE usertype_id = 1 AND isDeleted = 0');
         return res.status(201).json({ allcashiers : rows });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
+router.get('/countallcashiers', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [countAllCash] = await db.query('SELECT COUNT(id) AS count_cashiers FROM users WHERE usertype_id = 1 AND isDeleted = 0');
+        return res.status(201).json({ allcash : countAllCash[0] });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
+router.get('/countallpoints', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [sumAllPoints] = await db.query('SELECT SUM(c.points) AS sum_points FROM users u LEFT JOIN customers c ON c.user_id = u.id WHERE usertype_id = 2 AND c.isDeleted = 0');
+        return res.status(201).json({ sumPoints : sumAllPoints[0] });
     } catch (err) {
         return res.status(500).json({ message : err.message });
     }
@@ -137,10 +187,50 @@ router.post('/deleteuser', async (req, res) => {
 router.get('/allproducts', async (req, res) => {
     try {
         const db = await connectToDatabase();
-        const [rows] = await db.query('SELECT * FROM products');
+        const [rows] = await db.query('SELECT * FROM products WHERE isDeleted = 0');
         return res.status(201).json({ allprods : rows });
     } catch (err) {
         return res.status(500).json({ message: err.message });
+    }
+})
+
+router.get('/countallprod', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [countallprod] = await db.query('SELECT COUNT(*) AS count_prod FROM products WHERE isDeleted = 0');
+        return res.status(201).json({ allprod : countallprod[0] });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
+router.get('/countallrice', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [countallrice] = await db.query('SELECT COUNT(*) AS count_rice FROM products WHERE isDeleted = 0 AND category_id = 1');
+        return res.status(201).json({ allrice : countallrice[0] });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
+router.get('/countallrolls', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [countallrolls] = await db.query('SELECT COUNT(*) AS count_rolls FROM products WHERE isDeleted = 0 AND category_id = 2');
+        return res.status(201).json({ allrolls : countallrolls[0] });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
+    }
+})
+
+router.get('/countallside', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const [countallside] = await db.query('SELECT COUNT(*) AS count_side FROM products WHERE isDeleted = 0 AND category_id = 3');
+        return res.status(201).json({ allside : countallside[0] });
+    } catch (err) {
+        return res.status(500).json({ message : err.message });
     }
 })
 
@@ -190,7 +280,7 @@ router.post('/deleteprod', async (req, res) => {
 router.get('/allrewards', async (req, res) => {
     try {
         const db = await connectToDatabase();
-        const [rows] = await db.query('SELECT id, reward_name, reward_desc, reward_points, isDeleted FROM rewards');
+        const [rows] = await db.query('SELECT id, reward_name, reward_desc, reward_points, isDeleted FROM rewards WHERE isDeleted = 0');
         return res.status(201).json({ allrewards : rows });
     } catch (err) {
         return res.status(500).json({ message : err.message });

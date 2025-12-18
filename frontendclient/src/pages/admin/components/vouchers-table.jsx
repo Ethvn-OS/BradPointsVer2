@@ -1,27 +1,28 @@
 "use client"
 
-import { useState } from "react"
-
-const vouchersData = [
-  { name: "FREEDRINK", redemptions: 8 },
-  { name: "SIDEDISH50", redemptions: 8 },
-  { name: "BUYROLLSTAKE1", redemptions: 5 },
-  { name: "FREERICEMEAL", redemptions: 4 },
-  { name: "FREESIOMAI", redemptions: 4 },
-  { name: "FREEDESSERT", redemptions: 3 },
-  { name: "FREEAPPETIZER", redemptions: 3 },
-  { name: "BUYONEGETONE", redemptions: 2 },
-  { name: "HAPPYHOUR50", redemptions: 2 },
-  { name: "MEMBEREXCLUSIVE", redemptions: 1 },
-]
+import { useState, useEffect } from "react"
+import axios from "axios"
 
 export default function VouchersTable() {
+
+  const [redemvouch, setRedemVouch] = useState([]);
+
+  const vouchredem = async () => {
+    const response = await axios.get("http://localhost:8080/admin/vouchredem");
+    setRedemVouch(response.data.vouchredem);
+    console.log(response.data.vouchredem);
+  }
+
+  useEffect(() => {
+    vouchredem();
+  }, [])
+
   const [itemsPerPage, setItemsPerPage] = useState(5)
   const [currentPage, setCurrentPage] = useState(1)
 
-  const totalPages = Math.ceil(vouchersData.length / itemsPerPage)
+  const totalPages = Math.ceil(redemvouch.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
-  const displayedVouchers = vouchersData.slice(startIndex, startIndex + itemsPerPage)
+  const displayedVouchers = redemvouch.slice(startIndex, startIndex + itemsPerPage)
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -63,8 +64,8 @@ export default function VouchersTable() {
           <tbody>
             {displayedVouchers.map((voucher, idx) => (
               <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">{voucher.name}</td>
-                <td className="px-6 py-3 text-sm text-gray-900 text-left">{voucher.redemptions}</td>
+                <td className="px-6 py-3 text-sm font-medium text-gray-900">{voucher.reward_name}</td>
+                <td className="px-6 py-3 text-sm text-gray-900 text-left">{voucher.number_of_redemptions}</td>
               </tr>
             ))}
           </tbody>
@@ -94,3 +95,19 @@ export default function VouchersTable() {
     </div>
   )
 }
+
+
+
+// used as dummy data before backend
+/*const vouchersData = [
+  { name: "FREEDRINK", redemptions: 8 },
+  { name: "SIDEDISH50", redemptions: 8 },
+  { name: "BUYROLLSTAKE1", redemptions: 5 },
+  { name: "FREERICEMEAL", redemptions: 4 },
+  { name: "FREESIOMAI", redemptions: 4 },
+  { name: "FREEDESSERT", redemptions: 3 },
+  { name: "FREEAPPETIZER", redemptions: 3 },
+  { name: "BUYONEGETONE", redemptions: 2 },
+  { name: "HAPPYHOUR50", redemptions: 2 },
+  { name: "MEMBEREXCLUSIVE", redemptions: 1 },
+]*/

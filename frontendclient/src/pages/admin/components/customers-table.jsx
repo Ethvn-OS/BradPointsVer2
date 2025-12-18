@@ -132,7 +132,7 @@ export default function CustomersTable({ customers = [], onCustomersChange }) {
           <tbody>
             {displayedCustomers.map((customer, idx) => (
               <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">{customer.username}</td>
+                <td className="px-6 py-3 text-sm font-medium text-gray-900">{customer.user_name}</td>
                 <td className="px-6 py-3 text-sm text-gray-900">{customer.email}</td>
                 <td className="px-6 py-3 text-sm text-gray-900">{customer.points}</td>
                 <td className="px-6 py-3 text-sm flex gap-2">

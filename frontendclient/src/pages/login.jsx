@@ -42,22 +42,21 @@ const Login = () => {
         localStorage.setItem('token', token);
 
         showNotification('Login successful! Redirecting...', 'success');
-        
+
         setTimeout(() => {
           hideNotification();
           setTimeout(() => {
             if (usertype === 1) navigate('/cashierhome');
             else if (usertype === 2) navigate('/home');
             else if (usertype === 3) navigate('/dashboard');
-            else navigate('/home'); 
-          }, 300); 
-        }, 2000); 
+            else navigate('/home');
+          }, 300);
+        }, 2000);
       }
     } catch (err) {
       console.log(err);
       const errorMessage = err.response?.data?.message || err.message || 'Login failed. Please check your credentials.';
       showNotification(errorMessage, 'error');
-      
 
       setTimeout(() => {
         hideNotification();

@@ -34,9 +34,15 @@ const initialProducts = [
 ]
 
 const categoryColors = {
-  "Rice Meals & Soup": "bg-orange-200 text-orange-800",
-  Rolls: "bg-red-200 text-red-800",
-  "Side Dishes": "bg-yellow-200 text-yellow-800",
+  1: "bg-orange-200 text-orange-800",
+  2: "bg-red-200 text-red-800",
+  3: "bg-yellow-200 text-yellow-800",
+}
+
+const categoryNames = {
+  1: "Rice Meals & Soup",
+  2: "Rolls",
+  3: "Side Dishes"
 }
 
 export default function ProductsTable({ products: propsProducts, onProductsChange }) {
@@ -163,12 +169,12 @@ export default function ProductsTable({ products: propsProducts, onProductsChang
           <tbody>
             {displayedProducts.map((product) => (
               <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">{product.name}</td>
+                <td className="px-6 py-3 text-sm font-medium text-gray-900">{product.prod_name}</td>
                 <td className="px-6 py-3 text-sm">
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${categoryColors[product.category] || "bg-gray-200 text-gray-800"}`}
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${categoryColors[product.category_id] || "bg-gray-200 text-gray-800"}`}
                   >
-                    {product.category}
+                    {categoryNames[product.category_id]}
                   </span>
                 </td>
                 <td className="px-6 py-3 text-sm flex gap-2">

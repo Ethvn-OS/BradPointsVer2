@@ -77,7 +77,7 @@ export default function CashiersTable({ cashiers = [], onCashiersChange }) {
           <tbody>
             {displayedCashiers.map((cashier, idx) => (
               <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">{cashier.name}</td>
+                <td className="px-6 py-3 text-sm font-medium text-gray-900">{cashier.user_name}</td>
                 <td className="px-6 py-3 text-sm text-gray-900">{cashier.email}</td>
               </tr>
             ))}

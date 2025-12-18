@@ -23,7 +23,6 @@ function App() {
       <Route path='/rewards' element={<RewardsPage />} />
       <Route path='/feedback' element={<FeedbackPage />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
-      
 
     </Routes>
   );

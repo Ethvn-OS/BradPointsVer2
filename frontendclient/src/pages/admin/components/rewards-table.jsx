@@ -141,9 +141,9 @@ export default function RewardsTable({ rewards = [], onRewardsChange }) {
           <tbody>
             {displayedRewards.map((reward) => (
               <tr key={reward.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">{reward.name}</td>
-                <td className="px-6 py-3 text-sm text-gray-700">{reward.description}</td>
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">{reward.pointsRequired}</td>
+                <td className="px-6 py-3 text-sm font-medium text-gray-900">{reward.reward_name}</td>
+                <td className="px-6 py-3 text-sm text-gray-700">{reward.reward_desc}</td>
+                <td className="px-6 py-3 text-sm font-medium text-gray-900">{reward.reward_points}</td>
                 <td className="px-6 py-3 text-sm flex gap-2">
                   <button
                     onClick={() => handleEdit(reward)}
