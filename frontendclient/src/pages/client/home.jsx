@@ -7,6 +7,7 @@ import RewardsTab from './components/RewardsTab'
 import VouchersTab from './components/VouchersTab'
 import NotificationsTab from './components/NotificationsTab'
 import FeedbackTab from './components/FeedbackTab'
+import ProfilePage from './components/ProfilePage'
 import { mockData } from './mockData'
 import { PointsProvider } from './context/PointsContext'
 
@@ -23,7 +24,8 @@ const Home = () => {
         rewards: RewardsTab,
         vouchers: VouchersTab,
         notifications: NotificationsTab,
-        feedback: FeedbackTab
+        feedback: FeedbackTab,
+        profile: ProfilePage
     }), []);
 
     const fetchUser = async () => {
@@ -107,7 +109,7 @@ const Home = () => {
             useMockData={true}
         >
             <div className='flex h-screen overflow-hidden'>
-                <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+                <Sidebar activeTab={activeTab} onTabChange={setActiveTab} userProfile={user} onProfileClick={() => setActiveTab('profile')} />
                 <main className='flex-1 p-3 overflow-y-auto'>
                     {activeTab === 'home' ? (
                         <HomeTab user={user} rewards={rewards} />
@@ -117,6 +119,8 @@ const Home = () => {
                         <VouchersTab vouchers={vouchers} user={user} />
                     ) : activeTab === 'notifications' ? (
                         <NotificationsTab notifications={notifications} user={user} />
+                    ) : activeTab === 'profile' ? (
+                        <ProfilePage user={user} />
                     ) : (
                         <ActiveContent user={user} />
                     )}
