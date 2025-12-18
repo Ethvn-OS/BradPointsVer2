@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+:root {
+  font-family: 'Inter', sans-serif;
+  background-color: #F2EAD3;
+  --br-orange: #EA7300;
+  --br-red: #A62C2C;
+  --br-blue: #134686;
+  --br-gray: #BBB8B4;
+}
+
+
+/* font colors */
+.text-br-orange {
+  color: #EA7300;
+}
+
+.text-br-red {
+  color: #A62C2C;
+}
+
+.text-br-blue {
+  color: #134686;
+}
+
+.text-br-gray {
+  color: var(--br-gray);
+}
+
+/* font styles */
+.text-work-sans {
+  font-family: 'Work Sans', sans-serif;
+}
+.text-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+/* bg colors */
+.bg-br-orange {
+  background: var(--br-orange);
+}
+
+.bg-br-red {
+  background: var(--br-red);
+}
