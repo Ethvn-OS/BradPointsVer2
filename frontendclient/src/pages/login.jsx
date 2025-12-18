@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 const Login = () => {
 
   const [showPassword, setPassword] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
   const [values, setValues] = useState({
     email: '',
@@ -23,6 +24,14 @@ const Login = () => {
     setValues({...values, [e.target.name]: e.target.value})
   }
 
+  const showNotification = (message, type) => {
+    setNotification({ show: true, message, type });
+  };
+
+  const hideNotification = () => {
+    setNotification({ show: false, message: '', type: '' });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -32,29 +41,58 @@ const Login = () => {
         const { token, usertype } = response.data;
         localStorage.setItem('token', token);
 
-        if (usertype === 1) navigate('/cashierhome');
-        else if (usertype === 2) navigate('/home');
-        else if (usertype === 3) navigate('/dashboard');
-        else navigate('/home'); // fallback
+        showNotification('Login successful! Redirecting...', 'success');
+        
+        setTimeout(() => {
+          hideNotification();
+          setTimeout(() => {
+            if (usertype === 1) navigate('/cashierhome');
+            else if (usertype === 2) navigate('/home');
+            else if (usertype === 3) navigate('/dashboard');
+            else navigate('/home'); 
+          }, 300); 
+        }, 2000); 
       }
     } catch (err) {
       console.log(err);
+      const errorMessage = err.response?.data?.message || err.message || 'Login failed. Please check your credentials.';
+      showNotification(errorMessage, 'error');
+      
+
+      setTimeout(() => {
+        hideNotification();
+      }, 3000);
     }
   }
 
-  /* Just a TEST FOR BACKEND STUFF HEHE
-  const fetchAPI = async () => {
-    const response = await axios.get("http://localhost:8080/api");
-    console.log(response.data.fruits);
-  };
-
-  useEffect(() => {
-    fetchAPI();
-  }, []);
-  */
 
   return (
     <>
+    {/* Notification */}
+    {notification.show && (
+      <motion.div
+        initial={{ opacity: 0, y: -50, x: '-50%' }}
+        animate={{ opacity: 1, y: 0, x: '-50%' }}
+        exit={{ opacity: 0, y: -50, x: '-50%' }}
+        className={`fixed top-4 left-1/2 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 ${
+          notification.type === 'success' 
+            ? 'bg-green-500 text-white' 
+            : 'bg-red-500 text-white'
+        }`}
+      >
+        {notification.type === 'success' ? (
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+        ) : (
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
+        )}
+        <span className="font-medium">{notification.message}</span>
+      </motion.div>
+    )}
+
     <div className="min-h-screen flex items-center justify-center p-6">
       <motion.div 
       initial={{ opacity: 0, y: 50 }}      

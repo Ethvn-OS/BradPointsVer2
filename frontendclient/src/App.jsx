@@ -14,7 +14,7 @@ function App() {
       <Route path='/home' element={<Home />} />
       <Route path='/cashierhome' element={<CashierHome />} />
       <Route path='/dashboard' element={<AdminDash />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/home" replace />} />
 
     </Routes>
   );

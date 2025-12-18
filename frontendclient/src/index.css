@@ -40,3 +40,7 @@
 .bg-br-orange {
   background: var(--br-orange);
 }
+
+.bg-br-red {
+  background: var(--br-red);
+}

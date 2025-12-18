@@ -14,6 +14,7 @@
     "axios": "^1.13.2",
     "express": "^5.1.0",
     "framer-motion": "^12.23.24",
+    "lucide-react": "^0.554.0",
     "mysql": "^2.18.1",
     "nodemon": "^3.1.11",
     "react": "^19.2.0",

@@ -12,6 +12,9 @@ import axios from 'axios';
 const Signup = () => {
 
   const [showPassword, setPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
   // para sa backend stuff
   const [values, setValues] = useState({
@@ -26,27 +29,111 @@ const Signup = () => {
     setValues({...values, [e.target.name]: e.target.value})
   }
 
+  const showNotification = (message, type) => {
+    setNotification({ show: true, message, type });
+  };
+
+  const hideNotification = () => {
+    setNotification({ show: false, message: '', type: '' });
+  };
+
+  const validatePassword = (password) => {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long.';
+    }
+    
+    if (!/[a-zA-Z]/.test(password)) {
+      return 'Password must contain at least one letter.';
+    }
+    
+    if (!/[0-9]/.test(password)) {
+      return 'Password must contain at least one number.';
+    }
+    
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return 'Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?).';
+    }
+    
+    return null; 
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const passwordError = validatePassword(values.password);
+    if (passwordError) {
+      showNotification(passwordError, 'error');
+      setTimeout(() => {
+        hideNotification();
+      }, 3000);
+      return;
+    }
+    
+    if (values.password !== confirmPassword) {
+      showNotification('Passwords do not match. Please try again.', 'error');
+      setTimeout(() => {
+        hideNotification();
+      }, 3000);
+      return;
+    }
+    
     try {
       const response = await axios.post('http://localhost:8080/auth/signup', values);
       console.log(response);
       if (response.status === 201) {
-        navigate('/login');
+        showNotification('Account created successfully! Redirecting to login...', 'success');
+        
+        setTimeout(() => {
+          hideNotification();
+          setTimeout(() => {
+            navigate('/login');
+          }, 300); 
+        }, 2000);
       }
     } catch(err) {
       console.log(err);
+      const errorMessage = err.response?.data?.message || err.message || 'Sign up failed. Please try again.';
+      showNotification(errorMessage, 'error');
+      
+      setTimeout(() => {
+        hideNotification();
+      }, 3000);
     }
   }
 
   return (
     <>
+    {/* Notification */}
+    {notification.show && (
+      <motion.div
+        initial={{ opacity: 0, y: -50, x: '-50%' }}
+        animate={{ opacity: 1, y: 0, x: '-50%' }}
+        exit={{ opacity: 0, y: -50, x: '-50%' }}
+        className={`fixed top-4 left-1/2 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3${
+          notification.type === 'success' 
+            ? 'bg-green-500 text-white' 
+            : 'bg-red-500 text-white'
+        }`}
+      >
+        {notification.type === 'success' ? (
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+        ) : (
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
+        )}
+        <span className="font-medium">{notification.message}</span>
+      </motion.div>
+    )}
+
     <div className="min-h-screen flex items-center justify-center p-6">
       <motion.div
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="flex flex-row items-center justify-center bg-white rounded-3xl h-140 max-w-4xl w-full shadow-2xl overflow-hidden border-l-12 border-orange-500">
+      className="flex flex-row items-center justify-center bg-white rounded-3xl h-150 max-w-4xl w-full shadow-2xl overflow-hidden border-l-12 border-orange-500">
         <div className="flex flex-row w-full h-full">
 
           {/* Left Side */}
@@ -102,6 +189,27 @@ const Signup = () => {
                     className='absolute right-4 top-1/2 transform -translate-y-1/2 text-br-gray text-xl'
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+
+                {/* confirm password */}
+                <div className="relative w-full">
+                  <LuKeyRound className="absolute left-4 top-1/2 transform -translate-y-1/2 text-br-gray text-xl" />
+                  <input
+                    type= {showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="confirm password"
+                    className="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-md focus:border-orange-500 focus:outline-none text-black placeholder-gray-300 text-work-sans"
+                  />
+                  <button
+                    type='button'
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className='absolute right-4 top-1/2 transform -translate-y-1/2 text-br-gray text-xl'
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
 
