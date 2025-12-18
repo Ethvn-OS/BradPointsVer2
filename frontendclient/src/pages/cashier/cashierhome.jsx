@@ -24,6 +24,8 @@ const CashierHome = () => {
         fetchUser();
     }, [])
 
+    // here i add ang imong related code yza
+
     return (
         <div className='text-3x1 text-blue-500'>Cashier</div>
     )
