@@ -4,14 +4,10 @@ function Header() {
     const [currentDateTime, setCurrentDateTime] = useState('');
 
     const handleExit = () => {
-      // Try to close the window. Browsers typically only allow this
-      // for windows opened via script; attempt fallbacks.
+
       try {
         window.close();
-        // Fallback: try to replace the current window and close
-        // (works in some contexts)
         window.open('', '_self')?.close();
-        // As a final fallback, navigate to a blank page
         setTimeout(() => {
           window.location.replace('about:blank');
         }, 200);
