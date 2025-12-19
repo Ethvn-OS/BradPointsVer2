@@ -16,7 +16,7 @@ const CashierHome = () => {
     const fetchUser = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8080/auth/cashierhome', {
+            const response = await axios.get('http://localhost:8080/cashier/cashierhome', {
                 headers: {
                     "Authorization" : `Bearer ${token}`
                 }
