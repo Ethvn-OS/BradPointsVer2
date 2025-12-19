@@ -13,8 +13,9 @@ export const mockUser = {
     user_name: 'John Doe',
     email: 'john.doe@example.com',
     points: 1250,
-    usertype_id: 2,
-    created_at: '2024-01-15T10:30:00Z'
+    password: 'password123',
+    created_at: '2024-01-15T10:30:00Z',
+    profilePicture: null
 };
 
 export const mockRewards = [
@@ -110,7 +111,11 @@ export const mockVouchers = [
         discount_percentage: 10,
         status: 'active',
         expires_at: '2024-12-31T23:59:59Z',
-        redeemed_at: null
+        redeemed_at: null,
+        reward_desc: 'Get a voucher for 10% off your next order (minimum purchase applies)',
+        reward_image: voucherImg6,
+        reward_color: '#134686',
+        reward_points: 150
     },
     {
         id: 2,
@@ -119,7 +124,11 @@ export const mockVouchers = [
         discount_percentage: 0,
         status: 'active',
         expires_at: '2024-11-30T23:59:59Z',
-        redeemed_at: null
+        redeemed_at: null,
+        reward_desc: 'Free shipping on your next order',
+        reward_image: voucherImg1,
+        reward_color: '#A62C2C',
+        reward_points: 50
     },
     {
         id: 3,
@@ -128,44 +137,140 @@ export const mockVouchers = [
         discount_percentage: 50,
         status: 'used',
         expires_at: '2024-10-15T23:59:59Z',
-        redeemed_at: '2024-09-20T14:30:00Z'
+        redeemed_at: '2024-09-20T14:30:00Z',
+        reward_desc: 'Receive a Buy 1 Take 1 promo for any rolls meal or order',
+        reward_image: voucherImg3,
+        reward_color: '#EA7300',
+        reward_points: 75,
+        claimed: false
+    },
+    {
+        id: 4,
+        voucher_name: 'Free Drink',
+        voucher_code: 'FREEDRINK',
+        discount_percentage: 0,
+        status: 'used',
+        expires_at: '2024-12-01T23:59:59Z',
+        redeemed_at: '2024-10-15T12:00:00Z',
+        reward_desc: 'Get a free drink of any choice from any Braddex location',
+        reward_image: voucherImg1,
+        reward_color: '#A62C2C',
+        reward_points: 25,
+        claimed: true
     }
 ];
 
 export const mockNotifications = [
-    {
-        id: 1,
-        title: 'New Reward Available!',
-        message: 'Check out our new premium gift set reward for 1000 points',
-        type: 'reward',
-        isRead: false,
-        created_at: '2024-10-01T09:00:00Z'
-    },
-    {
-        id: 2,
-        title: 'Points Added',
-        message: 'You earned 50 points from your recent purchase',
-        type: 'points',
-        isRead: false,
-        created_at: '2024-09-28T15:30:00Z'
-    },
-    {
-        id: 3,
-        title: 'Voucher Expiring Soon',
-        message: 'Your 10% discount voucher expires in 3 days',
-        type: 'voucher',
-        isRead: true,
-        created_at: '2024-09-25T10:00:00Z'
-    },
-    {
-        id: 4,
-        title: 'Reward Redeemed',
-        message: 'You successfully redeemed "Free Coffee" reward',
-        type: 'redemption',
-        isRead: true,
-        created_at: '2024-09-20T11:15:00Z'
-    }
+  {
+    id: 1,
+    type: 'redemption',
+    title: 'Reward Redeemed!',
+    message: 'You have successfully availed BUYROLLSTAKE1! Your voucher is now available.',
+    customer_id: 2000015,
+    timestamp: '2025-07-21T21:27:27',
+    read: false
+  },
+  {
+    id: 2,
+    type: 'redemption',
+    title: 'Reward Redeemed!',
+    message: 'You have successfully availed FREEDRINK! Your voucher is now available.',
+    customer_id: 2000031,
+    timestamp: '2025-07-21T22:21:08',
+    read: false
+  },
+  {
+    id: 3,
+    type: 'redemption',
+    title: 'Reward Redeemed!',
+    message: 'You have successfully availed SIDEDISH50! Your voucher is now available.',
+    customer_id: 2000031,
+    timestamp: '2025-07-21T22:21:38',
+    read: false
+  },
+  {
+    id: 4,
+    type: 'redemption',
+    title: 'Reward Redeemed!',
+    message: 'You have successfully availed FREEDRINK! Your voucher is now available.',
+    customer_id: 2000028,
+    timestamp: '2025-07-21T22:35:37',
+    read: false
+  },
+  {
+    id: 5,
+    type: 'redemption',
+    title: 'Reward Redeemed!',
+    message: 'You have successfully availed SIDEDISH50! Your voucher is now available.',
+    customer_id: 2000028,
+    timestamp: '2025-07-21T22:35:51',
+    read: false
+  },
+  {
+    id: 6,
+    type: 'redemption',
+    title: 'Reward Redeemed!',
+    message: 'You have successfully availed BUYROLLSTAKE1! Your voucher is now available.',
+    customer_id: 2000028,
+    timestamp: '2025-07-21T23:24:21',
+    read: false
+  },
+  {
+    id: 7,
+    type: 'redemption',
+    title: 'Reward Redeemed!',
+    message: 'You have successfully availed FREERICEMEAL! Your voucher is now available.',
+    customer_id: 2000028,
+    timestamp: '2025-07-21T23:31:48',
+    read: false
+  },
+  {
+    id: 8,
+    type: 'redemption',
+    title: 'Reward Redeemed!',
+    message: 'You have successfully availed FREESIOMAI! Your voucher is now available.',
+    customer_id: 2000028,
+    timestamp: '2025-07-21T23:33:44',
+    read: false
+  },
+  {
+    id: 9,
+    type: 'redemption',
+    title: 'Reward Redeemed!',
+    message: 'You have successfully availed 10PERCENT! Your voucher is now available.',
+    customer_id: 2000028,
+    timestamp: '2025-07-22T15:12:56',
+    read: false
+  },
+  {
+    id: 12,
+    type: 'claim',
+    title: 'Reward Claimed!',
+    message: 'Voucher BRAD72910_76 has been claimed by User ID 2000030.',
+    customer_id: 2000030,
+    timestamp: '2025-07-23T01:40:20',
+    read: false
+  },
+  {
+    id: 15,
+    type: 'claim',
+    title: 'Reward Claimed!',
+    message: 'Voucher BRAD75383_77 has been claimed by User ID 2000030.',
+    customer_id: 2000030,
+    timestamp: '2025-07-23T01:52:42',
+    read: false
+  },
+  {
+    id: 20,
+    type: 'claim',
+    title: 'Reward Claimed!',
+    message: 'Voucher BRAD94917_53 has been claimed by User ID 2000005.',
+    customer_id: 2000005,
+    timestamp: '2025-07-23T02:09:58',
+    read: false
+  }
 ];
+
 
 export const mockPurchaseHistory = [
     {
