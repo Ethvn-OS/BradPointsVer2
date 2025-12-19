@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -20,7 +20,7 @@ const CashierHome = () => {
                 headers: {
                     "Authorization" : `Bearer ${token}`
                 }
-            });2
+            });
             if (response.status !== 201) {
                 navigate('/login');
             }
