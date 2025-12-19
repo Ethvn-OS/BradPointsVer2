@@ -61,11 +61,11 @@ const Sidebar = ({ activeTab = 'home', onTabChange = () => {}, userProfile = {},
                             className='flex flex-row gap-3 items-center hover:opacity-80 transition-opacity'
                         >
                             <img 
-                                src={userProfile.profilePicture || 'https://via.placeholder.com/40'} 
+                                src={userProfile?.profilePicture || 'https://via.placeholder.com/40'}
                                 alt="Profile" 
                                 className='w-8 h-8 rounded-full object-cover border-2 border-orange-300'
                             />
-                            <span className='font-medium text-xs'>{userProfile.user_name || 'User Name'}</span>
+                            <span className='font-medium text-xs'>{userProfile?.user_name || 'User Name'}</span>
                         </button>
 
                         {/* Logout Icon */}
