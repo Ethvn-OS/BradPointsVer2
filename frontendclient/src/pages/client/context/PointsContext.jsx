@@ -13,6 +13,16 @@ export const usePoints = () => {
 
 export const PointsProvider = ({ children, points, updateUserPoints, /*useMockData = false*/ }) => {
   const [currentPoints, setCurrentPoints] = useState(points || 0);
+  console.log('PointsProvider initialized with points:', points);
+  console.log('currentPoints state:', currentPoints);
+
+  useEffect(() => {
+    console.log('Points prop changed to:', points);
+    if (points !== undefined && points !== null) {
+      setCurrentPoints(Number(points));
+    }
+  }, [points]);
+
   const [redeemedRewards, setRedeemedRewards] = useState(new Set());
   const [notifications, setNotifications] = useState([]);
 
@@ -243,7 +253,9 @@ export const PointsProvider = ({ children, points, updateUserPoints, /*useMockDa
   };
 
   const canRedeemReward = (pointsRequired) => {
-    return currentPoints >= pointsRequired;
+    const result = currentPoints >= pointsRequired;
+    console.log(`canRedeemReward check: currentPoints=${currentPoints}, required=${pointsRequired}, canRedeem=${result}`);
+    return result;
   };
 
   const value = {
