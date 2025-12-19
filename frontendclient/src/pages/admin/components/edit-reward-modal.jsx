@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react"
 
 export default function EditRewardModal({ isOpen, onClose, onEditReward, reward }) {
-  const [formData, setFormData] = useState({ name: "", description: "", pointsRequired: "" })
+  const [formData, setFormData] = useState({ editrewname: "", editrewdesc: "", editrewpoints: "" })
 
   useEffect(() => {
     if (reward) {
       setFormData({
-        name: reward.name,
-        description: reward.description,
-        pointsRequired: reward.pointsRequired,
+        editrewname: reward.reward_name,
+        editrewdesc: reward.reward_desc,
+        editrewpoints: reward.reward_points
       })
     }
   }, [reward, isOpen])
@@ -23,15 +23,21 @@ export default function EditRewardModal({ isOpen, onClose, onEditReward, reward 
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.name.trim() || !formData.description.trim() || !formData.pointsRequired.toString().trim()) {
+    if (!formData.editrewname.trim() || !formData.editrewdesc.trim() || !formData.editrewpoints) {
       alert("Please fill in all fields")
       return
     }
 
-    onEditReward(reward.id, formData)
-    setFormData({ name: "", description: "", pointsRequired: "" })
+    await onEditReward({
+      id: reward.id,
+      editrewname: formData.editrewname,
+      editrewdesc: formData.editrewdesc,
+      editrewpoints: Number(formData.editrewpoints)
+    })
+
+    handleClose();
   }
 
   const handleClose = () => {
@@ -50,8 +56,8 @@ export default function EditRewardModal({ isOpen, onClose, onEditReward, reward 
             <label className="block text-sm font-medium text-gray-700 mb-2">Reward Name</label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="editrewname"
+              value={formData.editrewname}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter reward name"
@@ -61,8 +67,8 @@ export default function EditRewardModal({ isOpen, onClose, onEditReward, reward 
             <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
             <input
               type="text"
-              name="description"
-              value={formData.description}
+              name="editrewdesc"
+              value={formData.editrewdesc}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter reward description"
@@ -72,8 +78,8 @@ export default function EditRewardModal({ isOpen, onClose, onEditReward, reward 
             <label className="block text-sm font-medium text-gray-700 mb-2">Points Required</label>
             <input
               type="number"
-              name="pointsRequired"
-              value={formData.pointsRequired}
+              name="editrewpoints"
+              value={formData.editrewpoints}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter points required"

@@ -118,21 +118,21 @@ router.get('/countallpoints', async (req, res) => {
 })
 
 router.post('/adduser', async (req, res) => {
-    const {userInfo} = req.body;
+    const {username, email, password, usertype} = req.body;
     try {
         const db = await connectToDatabase();
-        const [rows] = await db.query('SELECT id FROM users WHERE (user_name = ? OR email = ?) and isDeleted = 0 LIMIT 1', [userInfo.username, userInfo.email]);
+        const [rows] = await db.query('SELECT id FROM users WHERE (user_name = ? OR email = ?) and isDeleted = 0 LIMIT 1', [username, email]);
 
         if (rows.length > 0) {
             return res.status(409).json({ message : "Username or email already taken. Please choose another."});
         }
 
-        const hashPassword = await bcrypt.hash(userInfo.password, 10);
+        const hashPassword = await bcrypt.hash(password, 10);
 
-        const [result] = await db.query('INSERT INTO users (user_name, email, password, usertype_id) VALUES (?, ?, ?, ?)', [userInfo.username, userInfo.email, hashPassword, userInfo.usertype]);
+        const [result] = await db.query('INSERT INTO users (user_name, email, password, usertype_id) VALUES (?, ?, ?, ?)', [username, email, hashPassword, usertype]);
         const newUserId = result.insertId;
 
-        if (userInfo.usertype == 2) { // pag add to customers
+        if (usertype == 2) { // pag add to customers
             await db.query('INSERT INTO customers (user_id) VALUES (?)', [newUserId]);
             return res.status(201).json({ message : "Customer user successfully added!", userId: newUserId });
         } else { // this else statement kay pag add to cashier

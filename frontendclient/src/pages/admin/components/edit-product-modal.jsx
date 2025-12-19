@@ -3,19 +3,19 @@
 import { useState, useEffect } from "react"
 
 const categoryOptions = [
-  "Rice Meals & Soup",
-  "Rolls",
-  "Side Dishes",
+  {id: 1, name: "Rice Meals & Soup"},
+  {id: 2, name: "Rolls"},
+  {id: 3, name: "Side Dishes"}
 ]
 
 export default function EditProductModal({ isOpen, onClose, onEditProduct, product }) {
-  const [formData, setFormData] = useState({ name: "", category: "" })
+  const [formData, setFormData] = useState({ editProd: "", editCategory: "" });
 
   useEffect(() => {
     if (product) {
       setFormData({
-        name: product.name,
-        category: product.category,
+        editProd: product.prod_name,
+        editCategory: product.category_id
       })
     }
   }, [product, isOpen])
@@ -28,19 +28,23 @@ export default function EditProductModal({ isOpen, onClose, onEditProduct, produ
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.name.trim() || !formData.category.trim()) {
+    if (!formData.editProd.trim() || !formData.editCategory) {
       alert("Please fill in all fields")
       return
     }
 
-    onEditProduct(product.id, formData)
-    setFormData({ name: "", category: "" })
+    await onEditProduct({
+      id: product.id,
+      editProd: formData.editProd,
+      editCategory: Number(formData.editCategory)
+    });
+    handleClose();
   }
 
   const handleClose = () => {
-    setFormData({ name: "", category: "" })
+    setFormData({ editProd: "", editCategory: "" })
     onClose()
   }
 
@@ -55,8 +59,8 @@ export default function EditProductModal({ isOpen, onClose, onEditProduct, produ
             <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="editProd"
+              value={formData.editProd}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter product name"
@@ -65,15 +69,15 @@ export default function EditProductModal({ isOpen, onClose, onEditProduct, produ
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
             <select
-              name="category"
-              value={formData.category}
+              name="editCategory"
+              value={formData.editCategory}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
             >
               <option value="">Select a category</option>
               {categoryOptions.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
                 </option>
               ))}
             </select>

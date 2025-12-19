@@ -68,6 +68,16 @@ export default function ProductsPage() {
     allProd();
   }, [])
 
+  const refreshAllData = async () => {
+    await Promise.all([
+      allProd(),
+      numOfProducts(),
+      numRice(),
+      numRolls(),
+      numSide()
+    ]);
+  }
+
   const totalProducts = allProducts.length
   const riceMealsCount = allProducts.filter((p) => p.category_id === 1).length
   const rollsCount = allProducts.filter((p) => p.category_id === 2).length
@@ -87,7 +97,7 @@ export default function ProductsPage() {
             <StatCard icon={<Shell className="w-8 h-8 text-red-700"/>} number={`${totalRolls.count_rolls}`} label="Rolls" />
             <StatCard icon={<LeafyGreen className="w-8 h-8 text-red-700"/>} number={`${totalSide.count_side}`} label="Side Dishes" />
           </div>
-          <ProductsTable products={allProducts} onProductsChange={setAllProducts} />
+          <ProductsTable products={allProducts} onProductsChange={refreshAllData} />
         </div>
       </main>
     </div>

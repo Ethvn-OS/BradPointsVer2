@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import axios from "axios"
 import AddProductModal from "./add-product-modal"
 import EditProductModal from "./edit-product-modal"
 import DeleteProductConfirmModal from "./delete-product-confirm-modal"
@@ -75,14 +76,11 @@ export default function ProductsTable({ products: propsProducts, onProductsChang
     setShowAddModal(false)
   }
 
-  const handleAddProductSubmit = (formData) => {
-    const newProduct = {
-      id: Math.max(...products.map((p) => p.id), 0) + 1,
-      name: formData.name,
-      category: formData.category,
+  const handleAddProductSubmit = async () => {
+    if (onProductsChange) {
+      await onProductsChange();
     }
-    setProducts([...products, newProduct])
-    handleCloseAddModal()
+    handleCloseAddModal();
   }
 
   const handleEdit = (product) => {
@@ -95,17 +93,27 @@ export default function ProductsTable({ products: propsProducts, onProductsChang
     setSelectedProduct(null)
   }
 
-  const handleEditProductSubmit = (productId, formData) => {
-    setProducts(
-      products.map((p) =>
-        p.id === productId ? { ...p, name: formData.name, category: formData.category } : p
-      )
-    )
+  const handleEditProductSubmit = async ({id, editProd, editCategory}) => {
+
+    try {
+      const response = await axios.post('http://localhost:8080/admin/updateprod', {
+        editId: id,
+        editProd,
+        editCategory
+      });
+
+      if (onProductsChange) {
+        await onProductsChange();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
     handleCloseEditModal()
   }
 
   const handleDelete = (product) => {
-    setProductToDelete(product)
+    setProductToDelete(product.id)
     setShowDeleteModal(true)
   }
 
@@ -114,8 +122,23 @@ export default function ProductsTable({ products: propsProducts, onProductsChang
     setProductToDelete(null)
   }
 
-  const handleConfirmDelete = () => {
-    setProducts(products.filter((p) => p.id !== productToDelete.id))
+  const handleConfirmDelete = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:8080/admin/deleteprod', {
+        deleteId: productToDelete
+      });
+      console.log(response);
+
+      if (onProductsChange) {
+        await onProductsChange();
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
+    // setProducts(products.filter((p) => p.id !== productToDelete.id))
     handleCloseDeleteModal()
   }
 
@@ -223,7 +246,7 @@ export default function ProductsTable({ products: propsProducts, onProductsChang
       <EditProductModal isOpen={showEditModal} onClose={handleCloseEditModal} onEditProduct={handleEditProductSubmit} product={selectedProduct} />
 
       {/* Delete Product Confirmation Modal */}
-      <DeleteProductConfirmModal isOpen={showDeleteModal} onClose={handleCloseDeleteModal} onConfirmDelete={handleConfirmDelete} productName={productToDelete?.name} />
+      <DeleteProductConfirmModal isOpen={showDeleteModal} onClose={handleCloseDeleteModal} onConfirmDelete={handleConfirmDelete} productName={products.find(p => p.id === productToDelete)?.prod_name || ''}  />
     </div>
   )
 }

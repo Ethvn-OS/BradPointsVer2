@@ -1,15 +1,16 @@
 "use client"
 
 import { useState } from "react"
+import axios from "axios"
 
 const categoryOptions = [
-  "Rice Meals & Soup",
-  "Rolls",
-  "Side Dishes",
+  {id: 1, name: "Rice Meals & Soup"},
+  {id: 2, name: "Rolls"},
+  {id: 3, name: "Side Dishes"}
 ]
 
 export default function AddProductModal({ isOpen, onClose, onAddProduct }) {
-  const [formData, setFormData] = useState({ name: "", category: "" })
+  const [formData, setFormData] = useState({ prodname: "", prodcategory: "" })
 
   const handleFormChange = (e) => {
     const { name, value } = e.target
@@ -19,19 +20,29 @@ export default function AddProductModal({ isOpen, onClose, onAddProduct }) {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.name.trim() || !formData.category.trim()) {
+    if (!formData.prodname.trim() || !formData.prodcategory) {
       alert("Please fill in all fields")
       return
     }
 
-    onAddProduct(formData)
-    setFormData({ name: "", category: "" })
+    // onAddProduct(formData)
+    try {
+      const response = await axios.post("http://localhost:8080/admin/createprod", {
+        prodname: formData.prodname,
+        prodcategory: Number(formData.prodcategory)
+      });
+      console.log(response);
+      await onAddProduct();
+      handleClose();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   const handleClose = () => {
-    setFormData({ name: "", category: "" })
+    setFormData({ prodname: "", prodcategory: "" })
     onClose()
   }
 
@@ -46,8 +57,8 @@ export default function AddProductModal({ isOpen, onClose, onAddProduct }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="prodname"
+              value={formData.prodname}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter product name"
@@ -56,15 +67,15 @@ export default function AddProductModal({ isOpen, onClose, onAddProduct }) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
             <select
-              name="category"
-              value={formData.category}
+              name="prodcategory"
+              value={formData.prodcategory}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
             >
               <option value="">Select a category</option>
               {categoryOptions.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
                 </option>
               ))}
             </select>

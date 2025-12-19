@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import axios from "axios"
 import AddRewardModal from "./add-reward-modal"
 import EditRewardModal from "./edit-reward-modal"
 import DeleteRewardModal from "./delete-reward-modal"
@@ -26,22 +27,23 @@ export default function RewardsTable({ rewards = [], onRewardsChange }) {
     setShowAddModal(false)
   }
 
-  const handleAddRewardSubmit = (formData) => {
-    const parsedPoints = Number(formData.pointsRequired)
-    const safePoints = Number.isNaN(parsedPoints) ? 0 : parsedPoints
+  const handleAddRewardSubmit = async ({ rewardname, rewarddesc, rewardpoints }) => {
+    try {
+      const response = await axios.post("http://localhost:8080/admin/createreward", {
+        rewardname,
+        rewarddesc,
+        rewardpoints
+      });
 
-    const newId = rewards.length ? Math.max(...rewards.map((r) => r.id)) + 1 : 1
+      if (onRewardsChange) {
+        await onRewardsChange();
+      }
 
-    const newReward = {
-      id: newId,
-      name: formData.name,
-      description: formData.description,
-      pointsRequired: safePoints,
+    } catch (err) {
+      console.log(err);
     }
 
-    const updatedRewards = [...rewards, newReward]
-    onRewardsChange(updatedRewards)
-    handleCloseAddModal()
+    handleCloseAddModal();
   }
 
   const handleEdit = (reward) => {
@@ -54,27 +56,27 @@ export default function RewardsTable({ rewards = [], onRewardsChange }) {
     setSelectedReward(null)
   }
 
-  const handleEditRewardSubmit = (originalId, formData) => {
-    const parsedPoints = Number(formData.pointsRequired)
-    const safePoints = Number.isNaN(parsedPoints) ? 0 : parsedPoints
+  const handleEditRewardSubmit = async ({ id, editrewname, editrewdesc, editrewpoints }) => {
+    try {
+      const response = await axios.post("http://localhost:8080/admin/updatereward", {
+        editId: id,
+        editrewname,
+        editrewdesc,
+        editrewpoints
+      });
 
-    const updatedRewards = rewards.map((r) =>
-      r.id === originalId
-        ? {
-            ...r,
-            name: formData.name,
-            description: formData.description,
-            pointsRequired: safePoints,
-          }
-        : r
-    )
+      if (onRewardsChange) {
+        await onRewardsChange();
+      }
 
-    onRewardsChange(updatedRewards)
+    } catch (err) {
+      console.log(err);
+    }
     handleCloseEditModal()
   }
 
   const handleDelete = (reward) => {
-    setRewardToDelete(reward)
+    setRewardToDelete(reward.id)
     setShowDeleteModal(true)
   }
 
@@ -83,9 +85,23 @@ export default function RewardsTable({ rewards = [], onRewardsChange }) {
     setRewardToDelete(null)
   }
 
-  const handleConfirmDelete = () => {
-    const updatedRewards = rewards.filter((r) => r.id !== rewardToDelete.id)
-    onRewardsChange(updatedRewards)
+  const handleConfirmDelete = async (e) => {
+
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:8080/admin/deletereward", {
+        deleteId: rewardToDelete
+      });
+      console.log(response);
+
+      if (onRewardsChange) {
+        await onRewardsChange();
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
     handleCloseDeleteModal()
   }
 
@@ -204,3 +220,22 @@ export default function RewardsTable({ rewards = [], onRewardsChange }) {
     </div>
   )
 }
+
+
+  // const handleAddRewardSubmit = (formData) => {
+  //   const parsedPoints = Number(formData.pointsRequired)
+  //   const safePoints = Number.isNaN(parsedPoints) ? 0 : parsedPoints
+
+  //   const newId = rewards.length ? Math.max(...rewards.map((r) => r.id)) + 1 : 1
+
+  //   const newReward = {
+  //     id: newId,
+  //     name: formData.name,
+  //     description: formData.description,
+  //     pointsRequired: safePoints,
+  //   }
+
+  //   const updatedRewards = [...rewards, newReward]
+  //   onRewardsChange(updatedRewards)
+  //   handleCloseAddModal()
+  // }

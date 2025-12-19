@@ -3,7 +3,7 @@
 import { useState } from "react"
 
 export default function AddRewardModal({ isOpen, onClose, onAddReward }) {
-  const [formData, setFormData] = useState({ name: "", description: "", pointsRequired: "" })
+  const [formData, setFormData] = useState({ rewardname: "", rewarddesc: "", rewardpoints: "" });
 
   const handleFormChange = (e) => {
     const { name, value } = e.target
@@ -13,15 +13,23 @@ export default function AddRewardModal({ isOpen, onClose, onAddReward }) {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.name.trim() || !formData.description.trim() || !formData.pointsRequired.toString().trim()) {
+    if (!formData.rewardname.trim() || !formData.rewarddesc.trim() || !formData.rewardpoints) {
       alert("Please fill in all fields")
       return
     }
 
-    onAddReward(formData)
-    setFormData({ name: "", description: "", pointsRequired: "" })
+    try {
+      await onAddReward({
+        rewardname: formData.rewardname,
+        rewarddesc: formData.rewarddesc,
+        rewardpoints: Number(formData.rewardpoints)
+      })
+      handleClose();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   const handleClose = () => {
@@ -40,8 +48,8 @@ export default function AddRewardModal({ isOpen, onClose, onAddReward }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">Reward Name</label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="rewardname"
+              value={formData.rewardname}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter reward name"
@@ -51,8 +59,8 @@ export default function AddRewardModal({ isOpen, onClose, onAddReward }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
             <input
               type="text"
-              name="description"
-              value={formData.description}
+              name="rewarddesc"
+              value={formData.rewarddesc}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter reward description"
@@ -62,8 +70,8 @@ export default function AddRewardModal({ isOpen, onClose, onAddReward }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">Points Required</label>
             <input
               type="number"
-              name="pointsRequired"
-              value={formData.pointsRequired}
+              name="rewardpoints"
+              value={formData.rewardpoints}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter points required"

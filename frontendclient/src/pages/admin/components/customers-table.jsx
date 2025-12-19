@@ -26,13 +26,17 @@ export default function CustomersTable({ customers = [], onCustomersChange }) {
     setShowAddModal(false)
   }
 
+  const [values, setValues] = useState({
+    // insert lang nya
+  })
+
   const handleAddCustomerSubmit = (formData) => {
     const newCustomer = {
       username: formData.username,
       email: formData.email,
       points: 0,
     }
-    
+
     const updatedCustomers = [...customers, newCustomer]
     onCustomersChange(updatedCustomers)
     handleCloseAddModal()

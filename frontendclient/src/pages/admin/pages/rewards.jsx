@@ -29,11 +29,18 @@ export default function RewardsPage() {
 
   useEffect(() => {
     countRew();
-  })
+  }, [])
 
   useEffect(() => {
     allRew();
-  })
+  }, [])
+
+  const refreshAllData = async () => {
+    await Promise.all([
+      countRew(),
+      allRew()
+    ]);
+  }
 
   const totalRewards = allRewards.length
 
@@ -52,7 +59,7 @@ export default function RewardsPage() {
               label="Total Rewards"
             />
           </div>
-          <RewardsTable rewards={allRewards} onRewardsChange={setAllRewards} />
+          <RewardsTable rewards={allRewards} onRewardsChange={refreshAllData} />
         </div>
       </main>
     </div>
