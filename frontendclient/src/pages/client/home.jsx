@@ -126,9 +126,9 @@ const Home = () => {
             updateUserPoints={updateUserPoints}
             useMockData={true}
         >
-            <div className='flex h-screen overflow-hidden'>
+            <div className='flex h-screen overflow-hidden bg-[#F2EAD3]'>
                 <Sidebar activeTab={activeTab} onTabChange={setActiveTab} userProfile={user} onProfileClick={() => setActiveTab('profile')} />
-                <main className='flex-1 p-3 overflow-y-auto'>
+                <main className='flex-1 p-3 overflow-y-auto bg-[#F2EAD3]'>
                     {activeTab === 'home' ? (
                         <HomeTab user={user} rewards={rewards} />
                     ) : activeTab === 'rewards' ? (
