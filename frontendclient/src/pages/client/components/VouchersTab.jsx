@@ -1,41 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from './header';
-import { usePoints } from '../context/PointsContext';
 
-const VouchersTab = ({ user, rewards = [] }) => {
+const VouchersTab = ({ user, vouchers = [] }) => {
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [redeemedVouchers, setRedeemedVouchers] = useState([]);
-  const [claimedStatuses, setClaimedStatuses] = useState({});
-  const { isRewardRedeemed, isRewardClaimed } = usePoints();
 
-  const allRewards = rewards || [];
-
-  // Only show vouchers that have been redeemed (claimed)
-  useEffect(() => {
-    const fetchRedeemedVouchers = async () => {
-      const redeemed = [];
-      const claims = {};
-
-      for (const reward of allRewards) {
-        try {
-          const isRedeemed = await isRewardRedeemed(reward.id);
-          if (isRedeemed) {
-            redeemed.push(reward);
-            const isClaimed = await isRewardClaimed(reward.id);
-            claims[reward.id] = isClaimed;
-          }
-        } catch (err) {
-          console.error(`Error checking reward ${reward.id}:`, err);
-        }
-      }
-
-      setRedeemedVouchers(redeemed);
-      setClaimedStatuses(claims);
-    };
-
-    fetchRedeemedVouchers();
-  }, [allRewards, isRewardRedeemed, isRewardClaimed]);
+  const redeemedVouchers = vouchers.filter(voucher => voucher.status === 'used' || voucher.redeemed_at);
 
   const openModal = (voucher) => {
     setSelectedVoucher(voucher);
@@ -69,13 +39,15 @@ const VouchersTab = ({ user, rewards = [] }) => {
             </div>
           ) : (
             redeemedVouchers.map((voucher) => {
-              const isClaimed = claimedStatuses[voucher.id];
+              const isRedeemed = voucher.status === 'used';
               
               return (
                 <div
                   key={voucher.id}
                   onClick={() => openModal(voucher)}
-                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-row h-44 cursor-pointer"
+                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-row h-48 cursor-pointer" style={{ 
+                  borderLeft: `8px solid ${voucher.reward_color || '#EA7300'}`
+                  }}
                 >
                   {/* Left Section - Colored with Image and Points */}
                   <div 
@@ -85,9 +57,9 @@ const VouchersTab = ({ user, rewards = [] }) => {
                     {voucher.reward_image ? (
                       <img 
                         src={voucher.reward_image} 
-                        alt={voucher.reward_name}
+                        alt={voucher.voucher_name}
                         className="absolute inset-0 w-full h-full object-cover z-0"
-                        style={{ opacity: 0.6, filter: 'blur(4px)' }}
+                        style={{ opacity: 0.3 }}
                         onError={(e) => {
                           console.error('Image failed to load:', voucher.reward_image);
                           e.target.style.display = 'none';
@@ -95,7 +67,7 @@ const VouchersTab = ({ user, rewards = [] }) => {
                       />
                     ) : null}
                     <div className="relative z-10 flex flex-col items-center justify-center text-white drop-shadow-lg">
-                      <span className="text-4xl font-bold leading-none">{voucher.reward_points}</span>
+                      <span className="text-4xl font-bold leading-none text-shadow-lg">{voucher.reward_points}</span>
                       <span className="text-sm font-medium mt-1">points</span>
                     </div>
                   </div>
@@ -104,7 +76,7 @@ const VouchersTab = ({ user, rewards = [] }) => {
                   <div className="flex-1 flex flex-col justify-between p-5">
                     <div>
                       <h3 className="text-xl font-extrabold mb-2" style={{ color: voucher.reward_color || '#EA7300' }}>
-                        {voucher.reward_name}
+                        {voucher.voucher_name}
                       </h3>
                       <div className="w-full h-px bg-gray-200 mb-3"></div>
                       <p className="text-xs text-gray-600 leading-relaxed mb-4">
@@ -118,8 +90,8 @@ const VouchersTab = ({ user, rewards = [] }) => {
                       >
                         REDEEMED
                       </button>
-                      <span className="text-xs font-semibold text-center" style={{ color: isClaimed ? '#059669' : '#DC2626' }}>
-                        {isClaimed ? 'STATUS: CLAIMED' : 'STATUS: UNCLAIMED'}
+                      <span className="text-xs font-semibold text-center" style={{ color: voucher.claimed ? '#059669' : '#DC2626' }}>
+                        {voucher.claimed ? 'CLAIMED REWARD' : 'UNCLAIMED REWARD'}
                       </span>
                     </div>
                   </div>
@@ -129,16 +101,7 @@ const VouchersTab = ({ user, rewards = [] }) => {
           )}
         </div>
 
-        {redeemedVouchers.length > 0 && (
-          <div className="flex justify-center mt-8">
-            <button 
-              onClick={() => window.history.back()} 
-              className="px-6 py-3 bg-white border-2 border-br-red text-br-red rounded-lg font-semibold hover:bg-br-red hover:text-white transition-colors"
-            >
-              ← Back to Home
-            </button>
-          </div>
-        )}
+       
       </div>
 
       {isModalOpen && selectedVoucher && (
@@ -151,7 +114,7 @@ const VouchersTab = ({ user, rewards = [] }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-2xl font-bold text-br-red">{selectedVoucher.reward_name}</h2>
+              <h2 className="text-2xl font-bold text-br-red">{selectedVoucher.voucher_name}</h2>
               <button 
                 className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
                 onClick={closeModal}
@@ -163,19 +126,22 @@ const VouchersTab = ({ user, rewards = [] }) => {
               <p className="text-gray-700 mb-4">{selectedVoucher.reward_desc || 'No description available.'}</p>
               <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
                 <p className="text-sm text-yellow-800 font-semibold">
-                  {claimedStatuses[selectedVoucher.id] 
-                    ? 'This voucher has been claimed!' 
+                  {selectedVoucher.claimed 
+                    ? 'This reward has been claimed!' 
                     : 'This voucher is redeemed, but the reward has not yet been claimed. Please claim your reward in-store soon!'}
                 </p>
               </div>
               <p className="text-lg font-semibold text-br-red">Points Required: {selectedVoucher.reward_points}</p>
+              {selectedVoucher.voucher_code && (
+                <p className="text-sm text-gray-600 mt-2">Code: {selectedVoucher.voucher_code}</p>
+              )}
             </div>
             <div className="p-6 border-t flex justify-end">
               <button 
                 className="px-6 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed" 
                 disabled
               >
-                Already Redeemed
+                {selectedVoucher.claimed ? 'Already Claimed' : 'Redeemed - Claim in Store'}
               </button>
             </div>
           </div>

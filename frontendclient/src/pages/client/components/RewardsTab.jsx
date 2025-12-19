@@ -94,7 +94,9 @@ const RewardsTab = ({ user, rewards = [] }) => {
               return (
                 <div
                   key={reward.id}
-                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-row h-44"
+                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-row h-44" style={{ 
+                  borderLeft: `8px solid ${reward.reward_color || '#EA7300'}`
+                  }}
                 >
                   {/* Left Section - Colored with Image and Points */}
                   <div 
@@ -106,7 +108,7 @@ const RewardsTab = ({ user, rewards = [] }) => {
                         src={reward.reward_image} 
                         alt={reward.reward_name}
                         className="absolute inset-0 w-full h-full object-cover z-0"
-                        style={{ opacity: 0.6, filter: 'blur(4px)' }}
+                        style={{ opacity: 0.3 }}
                         onError={(e) => {
                           console.error('❌ Image failed to load:', reward.reward_image, 'Type:', typeof reward.reward_image, 'for reward:', reward.reward_name);
                           e.target.style.display = 'none';
@@ -117,7 +119,7 @@ const RewardsTab = ({ user, rewards = [] }) => {
                       />
                     ) : null}
                     <div className="relative z-10 flex flex-col items-center justify-center text-white drop-shadow-lg">
-                      <span className="text-4xl font-bold leading-none">{reward.reward_points || reward.points}</span>
+                      <span className="text-4xl font-bold leading-none text-shadow-lg">{reward.reward_points || reward.points}</span>
                       <span className="text-sm font-medium mt-1">points</span>
                     </div>
                   </div>
