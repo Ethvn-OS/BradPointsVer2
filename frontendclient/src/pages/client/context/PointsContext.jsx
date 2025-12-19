@@ -17,8 +17,28 @@ export const PointsProvider = ({ children, points, updateUserPoints, /*useMockDa
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    setCurrentPoints(points || 0);
-  }, [points]);
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('http://localhost:8080/customer/getnotifs', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = res.data?.notifications || [];
+        const formatted = data.map(n => ({
+          id: n.id,
+          type: n.type,
+          title: n.title,
+          message: n.message,
+          timestamp: n.date_created,
+          read: false
+        }));
+        setNotifications(formatted);
+      } catch (err) {
+        console.error('Failed to fetch notifications:', err);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   // Load redeemed rewards from localStorage for persistence
   // useEffect(() => {

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Header from './header';
 import { mockNotifications } from '../mockData';
+import { usePoints } from '../context/PointsContext';
 
 const NotificationsTab = ({ user }) => {
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const { notifications, setNotifications } = usePoints();
 
   const markAsRead = (id) => {
     setNotifications(prev =>

@@ -44,7 +44,7 @@ router.get('/rewards', async (req, res) => {
 router.get('/getnotifs', verifyToken, async (req, res) => {
     try {
         const db = await connectToDatabase();
-        const [notifs] = db.query('SELECT * FROM notifications WHERE customer_id = ?', [req.userId]);
+        const [notifs] = await db.query('SELECT * FROM notifications WHERE customer_id = ?', [req.userId]);
         return res.status(201).json({ notifications : notifs });
     } catch (err) {
         return res.status(500).json({ message : err.message });
