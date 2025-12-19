@@ -3,7 +3,6 @@ import Header from './header'
 import assortedImg from '../../../assets/images/assorted.jpg'
 import PointsSection from './PointSection'
 import RewardsSection from './RewardsSection'
-import FeedbackSection from './FeedbackSection'
 
 const HomeTab = ({ user, rewards = [] }) => {
   return (
@@ -35,12 +34,6 @@ const HomeTab = ({ user, rewards = [] }) => {
             <RewardsSection sectionRewards={rewards} />
       </div>
 
-      <div className='w-full flex flex-col justify-center items-center mt-6'>
-            <FeedbackSection />
-      </div>
-
-
-        
     </div>
   )
 }
