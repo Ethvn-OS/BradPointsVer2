@@ -3,12 +3,14 @@ import Header from './header'
 import assortedImg from '../../../assets/images/assorted.jpg'
 import PointsSection from './PointSection'
 import RewardsSection from './RewardsSection'
+import FeedbackSection from './FeedbackSection'
 
-const HomeTab = ({ user, rewards = [] }) => {
+const HomeTab = ({ user, rewards = [], setActiveTab }) => {
   return (
     <div className='px-2 flex flex-col gap-4'>
 
         <Header user={user} />
+
 
         <div className="bg-br-orange rounded-lg overflow-hidden relative h-64">
             <img
@@ -32,6 +34,10 @@ const HomeTab = ({ user, rewards = [] }) => {
 
       <div className='w-full flex flex-col justify-center items-center mt-6'>
             <RewardsSection sectionRewards={rewards} />
+      </div>
+
+      <div className='w-full flex flex-col justify-center items-center mt-6'>
+            <FeedbackSection user={user} showGreetingHeader={false} onAccessForm={() => setActiveTab('feedback')} />
       </div>
 
     </div>
