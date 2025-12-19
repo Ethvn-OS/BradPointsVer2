@@ -4,6 +4,7 @@ import CustomersTable from "../components/customers-table"
 import CashiersTable from "../components/cashiers-table"
 import { Users, UserCheck, Gift } from "lucide-react"
 import { useEffect, useState, useMemo } from "react"
+import { NavLink, useNavigate } from 'react-router-dom'
 import axios from "axios"
 
 const customersData = [
@@ -26,6 +27,13 @@ const cashiersData = [
 ]
 
 export default function UsersPage() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) navigate('/login')
+  }, [navigate])
 
   const [totalActiveCustomers, setActiveCustomers] = useState(0);
   const [totalActiveCashiers, setActiveCashiers] = useState(0);

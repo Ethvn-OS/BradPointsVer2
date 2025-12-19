@@ -2,8 +2,18 @@ import Sidebar from "../components/sidebar"
 import FeedbackTable from "../components/feedback-table"
 import FeedbackAnalytics from "../components/feedback-analytics"
 import FeedbackChart from "../components/feedback-chart"
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useEffect } from "react"
 
 export default function FeedbackPage() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) navigate('/login')
+  }, [navigate])
+
   return (
     <div className="flex min-h-screen bg-amber-50">
       <Sidebar />

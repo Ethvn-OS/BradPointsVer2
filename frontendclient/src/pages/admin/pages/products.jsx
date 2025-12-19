@@ -4,6 +4,7 @@ import ProductsTable from "../components/products-table"
 import { Package, Utensils, Shell, LeafyGreen } from 'lucide-react'
 import { useState, useEffect } from "react"
 import axios from "axios"
+import { NavLink, useNavigate } from 'react-router-dom'
 
 export const metadata = {
   title: "Products - Admin Dashboard",
@@ -11,6 +12,13 @@ export const metadata = {
 }
 
 export default function ProductsPage() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) navigate('/login')
+  }, [navigate])
 
   const [totalNumProducts, setTotalNumProducts] = useState(0);
   const [totalRice, setTotalRice] = useState(0);

@@ -3,6 +3,7 @@ import StatCard from "../components/stat-card"
 import RewardsTable from "../components/rewards-table"
 import { Gift } from "lucide-react"
 import { useState, useEffect } from "react"
+import { NavLink, useNavigate } from 'react-router-dom'
 import axios from "axios"
 
 export const metadata = {
@@ -11,6 +12,13 @@ export const metadata = {
 }
 
 export default function RewardsPage() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) navigate('/login')
+  }, [navigate])
 
   const [countAllRewards, setCountAllRewards] = useState(0);
   const [allRewards, setAllRewards] = useState([]);
