@@ -3,20 +3,19 @@
 import { useState, useEffect } from "react"
 import { Eye, EyeOff } from "lucide-react"
 
-export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, customer }) {
-  const [formData, setFormData] = useState({ username: "", email: "", points: 0, password: "" })
+export default function EditCashierModal({ isOpen, onClose, onEditCashier, cashier }) {
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" })
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
-    if (customer) {
+    if (cashier) {
       setFormData({
-        username: customer.username,
-        email: customer.email,
-        points: customer.points,
+        name: cashier.name,
+        email: cashier.email,
         password: "",
       })
     }
-  }, [customer, isOpen])
+  }, [cashier, isOpen])
 
   const handleFormChange = (e) => {
     const { name, value } = e.target
@@ -28,17 +27,17 @@ export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, cus
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!formData.username.trim() || !formData.email.trim()) {
+    if (!formData.name.trim() || !formData.email.trim()) {
       alert("Please fill in all fields")
       return
     }
 
-    onEditCustomer(customer.username, formData)
-    setFormData({ username: "", email: "", points: 0, password: "" })
+    onEditCashier(cashier.name, formData)
+    setFormData({ name: "", email: "", password: "" })
   }
 
   const handleClose = () => {
-    setFormData({ username: "", email: "", points: 0, password: "" })
+    setFormData({ name: "", email: "", password: "" })
     setShowPassword(false)
     onClose()
   }
@@ -47,22 +46,22 @@ export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, cus
     setShowPassword(!showPassword)
   }
 
-  if (!isOpen || !customer) return null
+  if (!isOpen || !cashier) return null
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg p-8 w-96">
-        <h2 className="text-2xl font-bold text-red-700 mb-6">Edit Customer</h2>
+        <h2 className="text-2xl font-bold text-red-700 mb-6">Edit Cashier</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
             <input
               type="text"
-              name="username"
-              value={formData.username}
+              name="name"
+              value={formData.name}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
-              placeholder="Enter customer username"
+              placeholder="Enter cashier name"
             />
           </div>
           <div>
@@ -73,18 +72,7 @@ export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, cus
               value={formData.email}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
-              placeholder="Enter customer email"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Points</label>
-            <input
-              type="number"
-              name="points"
-              value={formData.points}
-              onChange={handleFormChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
-              placeholder="Enter points"
+              placeholder="Enter cashier email"
             />
           </div>
           <div>
@@ -134,3 +122,4 @@ export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, cus
     </div>
   )
 }
+
