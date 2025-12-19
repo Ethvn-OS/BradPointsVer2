@@ -6,7 +6,8 @@ import HomeTab from './components/HomeTab'
 import RewardsTab from './components/RewardsTab'
 import VouchersTab from './components/VouchersTab'
 import NotificationsTab from './components/NotificationsTab'
-import FeedbackTab from './components/FeedbackTab'
+import FeedbackTab from './components/FeedbackTab';
+import FeedbackSection from './components/FeedbackSection';
 import ProfilePage from './components/ProfilePage'
 import { mockData } from './mockData'
 import { PointsProvider } from './context/PointsContext'
@@ -24,7 +25,7 @@ const Home = () => {
         rewards: RewardsTab,
         vouchers: VouchersTab,
         notifications: NotificationsTab,
-        feedback: FeedbackTab,
+        feedback: FeedbackSection,
         profile: ProfilePage
     }), []);
 
@@ -121,6 +122,8 @@ const Home = () => {
                         <NotificationsTab notifications={notifications} user={user} />
                     ) : activeTab === 'profile' ? (
                         <ProfilePage user={user} />
+                    ) : activeTab === 'feedback' ? (
+                        <FeedbackSection user={user} />
                     ) : (
                         <ActiveContent user={user} />
                     )}

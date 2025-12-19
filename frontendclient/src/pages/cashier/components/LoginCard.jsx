@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import cashierIcon from '../assets/cashierIcon.png';
+import cashierIcon from '../../../assets/images/cashierIcon.png';
 
 function LoginCard({ onSubmitOrder, onRedeem }) {
   const [customerId, setCustomerId] = useState('');

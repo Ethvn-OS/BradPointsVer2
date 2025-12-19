@@ -8,7 +8,7 @@ import AdminDash from './pages/admin/pages/dashboard';
 import UsersPage from './pages/admin/pages/users';
 import ProductsPage from './pages/admin/pages/products';
 import RewardsPage from './pages/admin/pages/rewards';
-import FeedbackPage from './pages/admin/pages/feedback'
+import FeedbackPage from './pages/admin/pages/feedback';
 
 function App() {
   return (
