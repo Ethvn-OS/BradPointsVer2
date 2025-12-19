@@ -57,6 +57,7 @@ const Home = () => {
                 return;
             }
             setUser(response.data.user);
+            console.log(response.data.user);
         } catch (err) {
             // Use mock data on error
             console.log('Using mock data for development:', err.message);
@@ -74,13 +75,14 @@ const Home = () => {
                 setRewards(mockData.rewards);
                 return;
             }
-            const response = await axios.get('http://localhost:8080/auth/rewards', {
+            const response = await axios.get('http://localhost:8080/customer/rewards', {
                 headers: {
                     "Authorization" : `Bearer ${token}`
                 }
             });
             if (response.status === 200 || response.status === 201) {
                 setRewards(response.data.rewards || response.data || []);
+                console.log(response.data.rewards);
             } else {
                 setRewards(mockData.rewards);
             }
@@ -91,9 +93,25 @@ const Home = () => {
         }
     }
 
+    const fetchVouchers = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return setVouchers(mockData.vouchers);
+
+            const res = await axios.get('http://localhost:8080/customer/vouchers', {
+            headers: { Authorization: `Bearer ${token}` }
+            });
+            setVouchers(res.data.vouchers || res.data || []);
+        } catch (err) {
+            console.log('Using mock vouchers data:', err.message);
+            setVouchers(mockData.vouchers);
+        }
+    };
+
     useEffect(() => {
         fetchUser();
         fetchRewards();
+        fetchVouchers();
     }, [])
 
     const ActiveContent = tabComponents[activeTab] || HomeTab;
@@ -116,7 +134,7 @@ const Home = () => {
                     ) : activeTab === 'rewards' ? (
                         <RewardsTab rewards={rewards} user={user} />
                     ) : activeTab === 'vouchers' ? (
-                        <VouchersTab vouchers={vouchers} user={user} />
+                        <VouchersTab rewards={rewards} user={user} />
                     ) : activeTab === 'notifications' ? (
                         <NotificationsTab notifications={notifications} user={user} />
                     ) : activeTab === 'profile' ? (

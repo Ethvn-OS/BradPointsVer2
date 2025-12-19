@@ -13,26 +13,47 @@ const RewardsTab = ({ user, rewards = [] }) => {
 
   // Check redemption status for all rewards on mount
   useEffect(() => {
-    const checkAllRewards = async () => {
-      const redeemed = new Set();
-      for (const reward of rewards) {
-        const redeemedStatus = await isRewardRedeemed(reward.id);
-        if (redeemedStatus) {
-          redeemed.add(reward.id);
-        }
-      }
-      setRedeemedRewards(redeemed);
-    };
-    if (rewards.length > 0) {
-      checkAllRewards();
-    }
-  }, [rewards, isRewardRedeemed]);
+    let cancelled = false;
+    const token = localStorage.getItem('token');
+    if (!token || rewards.length === 0) return;
+
+    (async () => {
+      // check all in parallel
+      const results = await Promise.all(
+        rewards.map(r => isRewardRedeemed(Number(r.id)))
+      );
+      if (cancelled) return;
+
+      const next = new Set();
+      results.forEach((redeemed, idx) => {
+        if (redeemed) next.add(Number(rewards[idx].id));
+      });
+      setRedeemedRewards(next);
+      // console.log('Redeemed set after hydrate:', next);
+    })();
+
+    return () => { cancelled = true };
+
+    // const checkAllRewards = async () => {
+    //   const redeemed = new Set();
+    //   for (const reward of rewards) {
+    //     const redeemedStatus = await isRewardRedeemed(Number(reward.id));
+    //     if (redeemedStatus) {
+    //       redeemed.add(Number(reward.id));
+    //     }
+    //   }
+    //   setRedeemedRewards(redeemed);
+    // };
+    // if (rewards.length > 0) {
+    //   checkAllRewards();
+    // }
+  }, [rewards]);
 
   const openModal = async (reward) => {
     setSelectedReward(reward);
     setIsModalOpen(true);
     setCheckingRedeemed(true);
-    const redeemed = await isRewardRedeemed(reward.id);
+    const redeemed = await isRewardRedeemed(Number(reward.id));
     setIsRedeemed(redeemed);
     setCheckingRedeemed(false);
   }
@@ -42,9 +63,34 @@ const RewardsTab = ({ user, rewards = [] }) => {
     setSelectedReward(null);
   };
 
-  const claimReward = () => {
-    const success = redeemReward(selectedReward);
+  // const claimReward = async () => {
+
+  //   // if (!selectedReward) return;
+  //   // const success = await redeemReward(selectedReward);
+  //   // if (success) {
+  //   //   setRedeemedRewards(prev => new Set([...prev, selectedReward.id]));
+  //   //   setIsRedeemed(true);
+  //   //   closeModal();
+  //   // }
+
+  //   const success = await redeemReward(selectedReward);
+  //   if (success) {
+  //     setRedeemedRewards(prev => new Set([...prev, Number(selectedReward.id)]));
+  //     // setIsRedeemed(true);
+  //     closeModal();
+  //   }
+  // };
+
+  const claimReward = async () => {
+    if (!selectedReward) return;
+    const success = await redeemReward(selectedReward);
     if (success) {
+      setRedeemedRewards(prev => {
+        const copy = new Set(prev);
+        copy.add(Number(selectedReward.id));
+        return copy;
+      });
+      setIsRedeemed(true);
       closeModal();
     }
   };
@@ -81,30 +127,31 @@ const RewardsTab = ({ user, rewards = [] }) => {
         ))}
       </div>
 
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
             {filteredRewards.map((reward) => {
+              const rid = Number(reward.id);
               const rewardPoints = reward.reward_points || reward.points;
               const canRedeem = canRedeemReward(rewardPoints);
-              const alreadyRedeemed = redeemedRewards.has(reward.id);
-              
+              const alreadyRedeemed = redeemedRewards.has(rid);
+
               // Debug: Log image info
               console.log('Reward:', reward.reward_name, 'Image:', reward.reward_image, 'Type:', typeof reward.reward_image);
-              
+
               return (
                 <div
-                  key={reward.id}
+                  key={rid}
                   className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-row h-44" style={{ 
                   borderLeft: `8px solid ${reward.reward_color || '#EA7300'}`
                   }}
                 >
                   {/* Left Section - Colored with Image and Points */}
-                  <div 
+                  <div
                     className="relative w-2/6 flex flex-col items-center justify-center overflow-hidden"
                     style={{ backgroundColor: reward.reward_color || '#EA7300' }}
                   >
                     {reward.reward_image ? (
-                      <img 
+                      <img
                         src={reward.reward_image} 
                         alt={reward.reward_name}
                         className="absolute inset-0 w-full h-full object-cover z-0"
@@ -138,17 +185,18 @@ const RewardsTab = ({ user, rewards = [] }) => {
                     <button
                       onClick={() => {
                         if (alreadyRedeemed) {
-                          alert('You have already redeemed this reward!');
+                          // alert('You have already redeemed this reward!');
                           return;
                         }
                         if (canRedeem) {
-                          const success = redeemReward(reward);
-                          if (success) {
-                            setRedeemedRewards(prev => new Set([...prev, reward.id]));
-                          }
-                        } else {
                           openModal(reward);
-                        }
+                          // const success = await redeemReward(reward);
+                          // if (success) {
+                          //   setRedeemedRewards(prev => new Set([...prev, reward.id]));
+                          // }
+                        } //else {
+                        //  openModal(reward);
+                        //}
                       }}
                       className={`w-fit py-2 px-4 rounded-lg font-bold text-white text-xs transition-colors self-center ${
                         alreadyRedeemed || !canRedeem

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from "axios"
 
 const PointsContext = createContext();
 
@@ -10,7 +11,7 @@ export const usePoints = () => {
   return context;
 };
 
-export const PointsProvider = ({ children, points, updateUserPoints, useMockData = true }) => {
+export const PointsProvider = ({ children, points, updateUserPoints, /*useMockData = false*/ }) => {
   const [currentPoints, setCurrentPoints] = useState(points || 0);
   const [redeemedRewards, setRedeemedRewards] = useState(new Set());
   const [notifications, setNotifications] = useState([]);
@@ -20,134 +21,196 @@ export const PointsProvider = ({ children, points, updateUserPoints, useMockData
   }, [points]);
 
   // Load redeemed rewards from localStorage for persistence
-  useEffect(() => {
-    if (useMockData) {
-      const savedRedeemed = localStorage.getItem('redeemedRewards');
-      if (savedRedeemed) {
-        try {
-          const redeemed = JSON.parse(savedRedeemed);
-          setRedeemedRewards(new Set(redeemed));
-        } catch (err) {
-          console.error('Error loading redeemed rewards:', err);
-        }
-      }
-    }
-  }, [useMockData]);
+  // useEffect(() => {
+  //   if (useMockData) {
+  //     const savedRedeemed = localStorage.getItem('redeemedRewards');
+  //     if (savedRedeemed) {
+  //       try {
+  //         const redeemed = JSON.parse(savedRedeemed);
+  //         setRedeemedRewards(new Set(redeemed));
+  //       } catch (err) {
+  //         console.error('Error loading redeemed rewards:', err);
+  //       }
+  //     }
+  //   }
+  // }, [useMockData]);
 
   // Save redeemed rewards to localStorage
-  const saveRedeemedRewards = (rewardIds) => {
-    if (useMockData) {
-      localStorage.setItem('redeemedRewards', JSON.stringify(Array.from(rewardIds)));
-    }
-  };
+  // const saveRedeemedRewards = (rewardIds) => {
+  //   if (useMockData) {
+  //     localStorage.setItem('redeemedRewards', JSON.stringify(Array.from(rewardIds)));
+  //   }
+  // };
 
   // LOCAL/MOCK DATA VERSION
-  const redeemRewardLocal = (reward) => {
-    // Check if user has enough points
-    if (currentPoints < reward.reward_points) {
-      alert(`You need ${reward.reward_points} points to redeem this reward. You currently have ${currentPoints} points.`);
-      return false;
-    }
+  // const redeemRewardLocal = (reward) => {
+  //   // Check if user has enough points
+  //   if (currentPoints < reward.reward_points) {
+  //     alert(`You need ${reward.reward_points} points to redeem this reward. You currently have ${currentPoints} points.`);
+  //     return false;
+  //   }
 
-    // Check if reward was already redeemed
-    if (redeemedRewards.has(reward.id)) {
-      alert('You have already redeemed this reward!');
-      return false;
-    }
+  //   // Check if reward was already redeemed
+  //   if (redeemedRewards.has(reward.id)) {
+  //     alert('You have already redeemed this reward!');
+  //     return false;
+  //   }
 
-    // Deduct points and mark reward as redeemed
-    const newPoints = currentPoints - reward.reward_points;
-    setCurrentPoints(newPoints);
-    const newRedeemed = new Set([...redeemedRewards, reward.id]);
-    setRedeemedRewards(newRedeemed);
-    saveRedeemedRewards(newRedeemed);
+  //   // Deduct points and mark reward as redeemed
+  //   const newPoints = currentPoints - reward.reward_points;
+  //   setCurrentPoints(newPoints);
+  //   const newRedeemed = new Set([...redeemedRewards, reward.id]);
+  //   setRedeemedRewards(newRedeemed);
+  //   saveRedeemedRewards(newRedeemed);
     
-    // Update user points if callback provided
-    if (updateUserPoints) {
-      updateUserPoints(newPoints);
-    }
+  //   // Update user points if callback provided
+  //   if (updateUserPoints) {
+  //     updateUserPoints(newPoints);
+  //   }
     
-    // Create notification for reward redemption
-    const newNotification = {
-      id: Date.now(),
-      type: 'redemption',
-      title: 'Reward Redeemed!',
-      message: `You successfully redeemed "${reward.reward_name}" for ${reward.reward_points} points.`,
-      timestamp: new Date().toISOString(),
-      read: false
-    };
+  //   // Create notification for reward redemption
+  //   const newNotification = {
+  //     id: Date.now(),
+  //     type: 'redemption',
+  //     title: 'Reward Redeemed!',
+  //     message: `You successfully redeemed "${reward.reward_name}" for ${reward.reward_points} points.`,
+  //     timestamp: new Date().toISOString(),
+  //     read: false
+  //   };
     
-    setNotifications((prev) => [newNotification, ...prev]);
+  //   setNotifications((prev) => [newNotification, ...prev]);
     
-    alert(`Congratulations! You've successfully redeemed "${reward.reward_name}" for ${reward.reward_points} points.`);
-    return true;
-  };
+  //   alert(`Congratulations! You've successfully redeemed "${reward.reward_name}" for ${reward.reward_points} points.`);
+  //   return true;
+  // };
 
   // BACKEND VERSION (for when backend is ready)
-  const redeemRewardBackend = async (reward) => {
-    const response = await fetch("http://localhost/BradPoints/php-backend/redeem-reward.php", {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        avail_reward_name: reward.reward_name,
-        avail_reward_points: reward.reward_points,
-        avail_reward_id: reward.id,
-      }),
-    });
-    const data = await response.json();
-    if (data.success) {
-      setCurrentPoints(Number(data.points));
-      if (updateUserPoints) updateUserPoints(Number(data.points));
-      setNotifications((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          type: 'redemption',
-          title: 'Reward Redeemed!',
-          message: data.message,
-          timestamp: new Date().toISOString(),
-          read: false,
-        },
-      ]);
-      alert(data.message);
-      return true;
-    } else {
-      alert(data.message);
+  const redeemReward = async (reward) => {
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://localhost:8080/customer/redeemreward', {
+        rewardname: reward.reward_name,
+        rewardpoints: reward.reward_points ?? reward.points,
+        rewardid: reward.id
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = response.data;
+      if (data.success) {
+        const newPoints = Number(data.points);
+        setCurrentPoints(newPoints);
+        if (updateUserPoints) updateUserPoints(newPoints);
+
+        setRedeemedRewards(prev => new Set([...prev, reward.id]));
+
+        setNotifications(prev => [
+          ...prev,
+          {
+            id: Date.now(),
+            type: 'redemption',
+            title: 'Reward Redeemed!',
+            message: data.message,
+            timestamp: new Date().toISOString(),
+            read: false,
+          },
+        ])
+        alert(data.message);
+        return true;
+      } else {
+        alert(data.message);
+        return false;
+      }
+    } catch (err) {
+      console.error('Redeem error:', err);
+      alert('Failed to redeem reward.');
       return false;
     }
+
+
+
+    // const response = await fetch("http://localhost/BradPoints/php-backend/redeem-reward.php", {
+    //   method: 'POST',
+    //   credentials: 'include',
+    //   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    //   body: new URLSearchParams({
+    //     avail_reward_name: reward.reward_name,
+    //     avail_reward_points: reward.reward_points,
+    //     avail_reward_id: reward.id,
+    //   }),
+    // });
+    // const data = await response.json();
+    // if (data.success) {
+    //   setCurrentPoints(Number(data.points));
+    //   if (updateUserPoints) updateUserPoints(Number(data.points));
+    //   setNotifications((prev) => [
+    //     ...prev,
+    //     {
+    //       id: Date.now(),
+    //       type: 'redemption',
+    //       title: 'Reward Redeemed!',
+    //       message: data.message,
+    //       timestamp: new Date().toISOString(),
+    //       read: false,
+    //     },
+    //   ]);
+    //   alert(data.message);
+    //   return true;
+    // } else {
+    //   alert(data.message);
+    //   return false;
+    // }
   };
 
-  const redeemReward = useMockData ? redeemRewardLocal : redeemRewardBackend;
+  // const redeemReward = useMockData ? redeemRewardLocal : redeemRewardBackend;
 
-  // LOCAL/MOCK DATA VERSION
-  const isRewardRedeemedLocal = (rewardId) => {
-    return redeemedRewards.has(rewardId);
-  };
+  // // LOCAL/MOCK DATA VERSION
+  // const isRewardRedeemedLocal = (rewardId) => {
+  //   return redeemedRewards.has(rewardId);
+  // };
 
   // BACKEND VERSION
-  const isRewardRedeemedBackend = async (rewardId) => {
-    const response = await fetch("http://localhost/BradPoints/php-backend/check-redeem.php", {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        avail_reward_id: rewardId
-      }),
-    });
-    const data = await response.json();
-    return data.redeemed;
+  const isRewardRedeemed = async (rewardId) => {
+
+    const token = localStorage.getItem('token');
+    const {data} = await axios.post('http://localhost:8080/customer/checkredeem', {
+      rewardId: Number(rewardId)
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return Boolean(data?.redeemed);
+
+    // const response = await fetch("http://localhost/BradPoints/php-backend/check-redeem.php", {
+    //   method: 'POST',
+    //   credentials: 'include',
+    //   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    //   body: new URLSearchParams({
+    //     avail_reward_id: rewardId
+    //   }),
+    // });
+    // const data = await response.json();
+    // return data.redeemed;
   };
 
-  const isRewardRedeemed = useMockData 
-    ? (rewardId) => Promise.resolve(isRewardRedeemedLocal(rewardId))
-    : isRewardRedeemedBackend;
+  // const isRewardRedeemed = useMockData 
+  //   ? (rewardId) => Promise.resolve(isRewardRedeemedLocal(rewardId))
+  //   : isRewardRedeemedBackend;
 
   const isRewardClaimed = async (rewardId) => {
-    if (useMockData) {
-      return redeemedRewards.has(rewardId);
-    }
-    const response = await fetch("http://localhost/BradPoints/php-backend/check-claim.php", {
+    // if (useMockData) {
+    //   return redeemedRewards.has(rewardId);
+    // }
+    
+    const token = localStorage.getItem('token');
+    const {data} = await axios.post('http://localhost:8080/customer/checkclaim', {
+      rewardId
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return data.claimed;
+
+    /*const response = await fetch("http://localhost/BradPoints/php-backend/check-claim.php", {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -156,7 +219,7 @@ export const PointsProvider = ({ children, points, updateUserPoints, useMockData
       }),
     });
     const data = await response.json();
-    return data.claimed;
+    return data.claimed;*/
   };
 
   const canRedeemReward = (pointsRequired) => {
