@@ -11,6 +11,7 @@ import FeedbackSection from './components/FeedbackSection';
 import ProfilePage from './components/ProfilePage'
 import { mockData } from './mockData'
 import { PointsProvider } from './context/PointsContext'
+import RewardsSection from './components/RewardsSection'
 
 const Home = () => {
     const navigate = useNavigate();
