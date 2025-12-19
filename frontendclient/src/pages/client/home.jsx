@@ -108,11 +108,21 @@ const Home = () => {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    }
+
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
         fetchUser();
         fetchRewards();
         fetchVouchers();
-    }, [])
+    }, [navigate]);
 
     const ActiveContent = tabComponents[activeTab] || HomeTab;
 
@@ -127,7 +137,7 @@ const Home = () => {
             useMockData={true}
         >
             <div className='flex h-screen overflow-hidden bg-[#F2EAD3]'>
-                <Sidebar activeTab={activeTab} onTabChange={setActiveTab} userProfile={user} onProfileClick={() => setActiveTab('profile')} />
+                <Sidebar activeTab={activeTab} onTabChange={setActiveTab} userProfile={user} onProfileClick={() => setActiveTab('profile')} onLogout={handleLogout} />
                 <main className='flex-1 p-3 overflow-y-auto bg-[#F2EAD3]'>
                     {activeTab === 'home' ? (
                         <HomeTab user={user} rewards={rewards} />
