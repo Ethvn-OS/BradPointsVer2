@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// import axios from 'axios'; // Uncomment when ready for backend integration
+import axios from 'axios'; // Uncomment when ready for backend integration
 
 const ClientFeedbackForm = ({ onGoBack, onFormSubmitSuccess }) => {
   const [date, setDate] = useState('');
@@ -13,6 +13,14 @@ const ClientFeedbackForm = ({ onGoBack, onFormSubmitSuccess }) => {
 
     // Simulate API call
     try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://localhost:8080/customer/savefeedback', {
+        rating: rating,
+        feedback: message
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
       // const response = await axios.post('http://localhost:8080/client/feedback', {
       //   date,
       //   rating,
@@ -25,8 +33,8 @@ const ClientFeedbackForm = ({ onGoBack, onFormSubmitSuccess }) => {
 
       setSubmissionStatus('success');
       // Clear form after successful submission
-      setFeedbackType('suggestion');
-      setSubject('');
+      // setFeedbackType('suggestion');
+      // setSubject('');
       setMessage('');
       if (onFormSubmitSuccess) {
         onFormSubmitSuccess();
@@ -59,7 +67,7 @@ const ClientFeedbackForm = ({ onGoBack, onFormSubmitSuccess }) => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
 
-        <div>
+        {/*<div>
           <label htmlFor="date" className="block text-gray-700 text-sm font-semibold mb-2">
             Date
           </label>
@@ -71,7 +79,7 @@ const ClientFeedbackForm = ({ onGoBack, onFormSubmitSuccess }) => {
             onChange={(e) => setDate(e.target.value)}
             required
           />
-          </div>
+          </div>*/}
 
         <div>
           <label htmlFor="rating" className="block text-gray-700 text-sm font-semibold mb-2">

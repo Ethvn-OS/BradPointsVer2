@@ -167,4 +167,28 @@ router.post('/redeemreward', verifyToken, async (req, res) => {
   }
 });
 
+router.post('/savefeedback', verifyToken, async (req, res) => {
+  const { rating, feedback } = req.body;
+  const userId = req.userId;
+
+  if (!userId || !rating || !feedback || String(feedback).trim() === '') {
+    return res.status(400).json({ success: false, message: 'Missing input data.' });
+  }
+
+  try {
+    const db = await connectToDatabase();
+    const [result] = await db.query(
+      'INSERT INTO feedback (user_id, rating, content) VALUES (?, ?, ?)',
+      [userId, Number(rating), String(feedback).trim()]
+    );
+
+    return res.status(201).json({
+      success: true,
+      review_id: result.insertId
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Database insertion failed.' });
+  }
+})
+
 export default router;
