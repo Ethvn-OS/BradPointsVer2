@@ -67,7 +67,7 @@ function LoginCard({ onSubmitOrder, onRedeem }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg ring-1 ring-bp-red p-8 w-full max-w-md relative z-10 h-auto sm:h-[500px] font-sans">
+    <div className="bg-white rounded-lg shadow-lg ring-2 ring-red-800 p-8 w-full max-w-md relative z-10 h-auto sm:h-[500px] text-instrument-sans">
       {/* Back Button for the second section */}
       {showActions && (
         <button
@@ -113,7 +113,7 @@ function LoginCard({ onSubmitOrder, onRedeem }) {
         // Submit Button - only when !showActions
         <button
           onClick={handleSubmit}
-          className="w-full bg-bp-red text-white py-3 rounded-md font-semibold hover:bg-red-700 transition-colors"
+          className="w-full bg-red-800 text-white py-3 rounded-md font-semibold"
         >
           Submit
         </button>
@@ -126,7 +126,7 @@ function LoginCard({ onSubmitOrder, onRedeem }) {
           <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
             <button
               onClick={handleOrderSubmit}
-              className="flex-1 bg-bp-red text-white py-3 rounded-md font-semibold hover:bg-red-700 transition-colors flex flex-col items-center justify-center space-y-2"
+              className="flex-1 bg-red-800 text-white py-3 rounded-md font-semibold flex flex-col items-center justify-center space-y-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h-.75a1.125 1.125 0 01-1.125-1.125V11.25m17.25 0h-3.584a6 6 0 01-.145.334L17.25 12m4.5-2.75V15.75m0 0v2.5a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-2.5m17.25 0a2.25 2.25 0 00-2.25-2.25H5.25a2.25 2.25 0 00-2.25 2.25m17.25 0h-3.584a6 6 0 01-.145.334L17.25 12m4.5-2.75v.25M4.5 9H9m0-.75a3 3 0 013-3h.211a3 3 0 012.875 1.764" />
@@ -135,7 +135,7 @@ function LoginCard({ onSubmitOrder, onRedeem }) {
             </button>
             <button
               onClick={handleRedeemVoucher}
-              className="flex-1 bg-bp-red text-white py-3 rounded-md font-semibold hover:bg-red-700 transition-colors flex flex-col items-center justify-center space-y-2"
+              className="flex-1 bg-red-800 text-white py-3 rounded-md font-semibold flex flex-col items-center justify-center space-y-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />
