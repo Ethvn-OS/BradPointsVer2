@@ -7,20 +7,46 @@ let cashId; // id sa usa ka cashier
 let targetId; // here nato i store ang id sa user nga mo order or retrieve sa ilang order
 
 router.get('/cashierhome', verifyToken, async (req, res) => {
-    try {
-        const db = await connectToDatabase();
-        const [rows] = await db.query("SELECT u.id AS user_id, u.user_name, u.password, u.usertype_id, u.email, c.points AS points FROM users u LEFT JOIN customers c ON c.user_id = u.id AND c.isDeleted = 0 WHERE user_id = ? AND u.isDeleted = 0 LIMIT 1", [req.userId]);
+    console.log('=== /home route debug ===');
+        console.log('req.userId:', req.userId);
+        console.log('req.userId type:', typeof req.userId);
 
-        if(rows.length === 0) {
-            return res.status(404).json({ message : "User does not exist."});
+      try {
+            const db = await connectToDatabase();
+
+            console.log('Executing query with userId:', req.userId);
+
+            const [rows] = await db.query(
+                `SELECT 
+                    u.id AS user_id, 
+                    u.user_name, 
+                    u.password, 
+                    u.usertype_id, 
+                    u.email, 
+                    c.points AS points,
+                    ca.cashier_id AS cashierId
+                FROM users u
+                LEFT JOIN customers c ON c.user_id = u.id AND c.isDeleted = 0
+                LEFT JOIN cashiers ca ON ca.user_id = u.id AND ca.isDeleted = 0
+                WHERE u.id = ? AND u.isDeleted = 0 
+                LIMIT 1`,
+                [req.userId]
+            );
+
+            console.log('Query result rows:', rows);
+            console.log('Rows length:', rows.length);
+
+            if(rows.length === 0) {
+                return res.status(404).json({ message : "User does not exist."});
+            }
+
+            cashId = rows[0].user_id;
+            return res.status(201).json({user: rows[0]});
+
+        } catch (err) {
+            console.error('Home route error:', err);
+            return res.status(500).json({message: "server error"});
         }
-
-        cashId = rows[0].user_id;
-        return res.status(201).json({user: rows[0]});
-
-    } catch (err) {
-        return res.status(500).json({message: "server error"});
-    }
 })
 
 // kato ning para sa when you input your id number (sa customer) and then it will find if the customer exists or not
@@ -68,7 +94,7 @@ router.post('/cashierredeem', verifyToken, async (req, res) => {
             } else {
                 await db.query("UPDATE redemption SET status = 'Claimed' WHERE redemption_id = ?", [redeemvouch]);
                 const [cashierId] = await db.query('SELECT cashier_id FROM cashiers WHERE user_id = ?', [req.userId]);
-                const legit_cashId = cashierId[0];
+                const legit_cashId = cashierId[0].cashier_id;
                 console.log(legit_cashId);
                 await db.query("UPDATE redemption SET cashier_id = ? WHERE redemption_id = ? AND user_id = ?", [legit_cashId, redeemvouch, customerId]);
                 const success_message = `Voucher ${redeemvouch} has been claimed by User ID ${customerId}.`;

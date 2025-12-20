@@ -35,6 +35,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      localStorage.removeItem('token');
+
       const response = await axios.post('http://localhost:8080/auth/login', values);
       console.log(response);
       if (response.status === 201) {
