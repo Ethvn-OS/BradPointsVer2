@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { usePoints } from '../context/PointsContext';
 
 const PointsSection = ({ user, rewards = [] }) => {
   const currentPoints = user?.points || 0;
+  const { isRewardRedeemed } = usePoints();
 
   const [nextReward, setNextReward] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +15,7 @@ const PointsSection = ({ user, rewards = [] }) => {
       return;
     }
 
-    const getUnredeemed = () => {
+    const getUnredeemed = async () => {
       setLoading(true);
       const claimable = [];
       const upcoming = [];
@@ -25,14 +27,25 @@ const PointsSection = ({ user, rewards = [] }) => {
         return;
       }
 
+      // for (const reward of rewards) {
+      //   // For now, we'll assume rewards aren't redeemed if they're in the list
+      //   // You can add redemption checking logic later
+      //   const rewardPoints = reward.reward_points || reward.points || 0;
+      //   if (currentPoints >= rewardPoints) {
+      //     claimable.push(reward);
+      //   } else {
+      //     upcoming.push(reward);
+      //   }
+      // }
+
       for (const reward of rewards) {
-        // For now, we'll assume rewards aren't redeemed if they're in the list
-        // You can add redemption checking logic later
-        const rewardPoints = reward.reward_points || reward.points || 0;
-        if (currentPoints >= rewardPoints) {
-          claimable.push(reward);
-        } else {
-          upcoming.push(reward);
+        const redeemed = await isRewardRedeemed(reward.id);
+        if (!redeemed) {
+          if (currentPoints >= reward.reward_points) {
+            claimable.push(reward);
+          } else {
+            upcoming.push(reward);
+          }
         }
       }
 
