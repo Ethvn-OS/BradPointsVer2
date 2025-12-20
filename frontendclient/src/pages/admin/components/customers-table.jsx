@@ -35,6 +35,7 @@ export default function CustomersTable({ customers = [], onCustomersChange }) {
       username: formData.username,
       email: formData.email,
       points: 0,
+      password: "defaultPass123", // Default password for new customers
     }
 
     const updatedCustomers = [...customers, newCustomer]
@@ -63,6 +64,8 @@ export default function CustomersTable({ customers = [], onCustomersChange }) {
             username: formData.username,
             email: formData.email,
             points: Number.isNaN(parsedPoints) ? 0 : parsedPoints,
+            // Only update password if a new one was provided
+            ...(formData.password && formData.password.trim() ? { password: formData.password } : {}),
           }
         : c
     )

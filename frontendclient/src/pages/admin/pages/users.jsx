@@ -8,22 +8,22 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import axios from "axios"
 
 const customersData = [
-  { username: "Ethan", email: "", points: 117 },
-  { username: "YzaLord", email: "yza@gmail.com", points: 100 },
-  { username: "*testuser007", email: "test007@gmail.com", points: 325 },
-  { username: "*testuser004", email: "test004@gmail.com", points: 70 },
-  { username: "Aimee_123", email: "aimee123@gmail.com", points: 5 },
-  { username: "JohnDoe", email: "john@gmail.com", points: 250 },
-  { username: "SarahSmith", email: "sarah@gmail.com", points: 180 },
-  { username: "MikeJohnson", email: "mike@gmail.com", points: 95 },
-  { username: "EmilyBrown", email: "emily@gmail.com", points: 420 },
-  { username: "DavidLee", email: "david@gmail.com", points: 210 },
+  { username: "Ethan", email: "", points: 117, password: "password123" },
+  { username: "YzaLord", email: "yza@gmail.com", points: 100, password: "yzaPass456" },
+  { username: "*testuser007", email: "test007@gmail.com", points: 325, password: "test007Pass" },
+  { username: "*testuser004", email: "test004@gmail.com", points: 70, password: "test004Pass" },
+  { username: "Aimee_123", email: "aimee123@gmail.com", points: 5, password: "aimeePass789" },
+  { username: "JohnDoe", email: "john@gmail.com", points: 250, password: "johnDoe123" },
+  { username: "SarahSmith", email: "sarah@gmail.com", points: 180, password: "sarahPass456" },
+  { username: "MikeJohnson", email: "mike@gmail.com", points: 95, password: "mikePass789" },
+  { username: "EmilyBrown", email: "emily@gmail.com", points: 420, password: "emilyPass123" },
+  { username: "DavidLee", email: "david@gmail.com", points: 210, password: "davidPass456" },
 ]
 
 const cashiersData = [
-  { name: "Juan", email: "juan@gmail.com" },
-  { name: "Maria", email: "maria@gmail.com" },
-  { name: "Pedro", email: "pedro@gmail.com" },
+  { name: "Juan", email: "juan@gmail.com", password: "juanPass123" },
+  { name: "Maria", email: "maria@gmail.com", password: "mariaPass456" },
+  { name: "Pedro", email: "pedro@gmail.com", password: "pedroPass789" },
 ]
 
 export default function UsersPage() {
