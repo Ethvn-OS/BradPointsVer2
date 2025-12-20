@@ -4,15 +4,14 @@ import { useState, useEffect } from "react"
 import { Eye, EyeOff } from "lucide-react"
 
 export default function EditCashierModal({ isOpen, onClose, onEditCashier, cashier }) {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" })
+  const [formData, setFormData] = useState({ editUsername: "", editPoints: 0, editEmail: "", usertype: 1 })
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     if (cashier) {
       setFormData({
-        name: cashier.name,
-        email: cashier.email,
-        password: "",
+        editUsername: cashier.user_name,
+        editEmail: cashier.email
       })
     }
   }, [cashier, isOpen])
@@ -25,20 +24,26 @@ export default function EditCashierModal({ isOpen, onClose, onEditCashier, cashi
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.name.trim() || !formData.email.trim()) {
+
+    if (!formData.editUsername.trim() || !formData.editEmail.trim()) {
       alert("Please fill in all fields")
       return
     }
 
-    onEditCashier(cashier.name, formData)
-    setFormData({ name: "", email: "", password: "" })
+    await onEditCashier({
+      id: cashier.id,
+      editUsername: formData.editUsername,
+      editEmail: formData.editEmail,
+      editPoints: 0,
+      usertype: 1
+    });
+    handleClose();
   }
 
   const handleClose = () => {
-    setFormData({ name: "", email: "", password: "" })
-    setShowPassword(false)
+    setFormData({ editUsername: "", editPoints: 0, editEmail: "", usertype: 1 })
     onClose()
   }
 
@@ -57,8 +62,8 @@ export default function EditCashierModal({ isOpen, onClose, onEditCashier, cashi
             <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="editUsername"
+              value={formData.editUsername}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter cashier name"
@@ -68,40 +73,12 @@ export default function EditCashierModal({ isOpen, onClose, onEditCashier, cashi
             <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
             <input
               type="email"
-              name="email"
-              value={formData.email}
+              name="editEmail"
+              value={formData.editEmail}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter cashier email"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password <span className="text-gray-500 text-xs">(optional)</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleFormChange}
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
-                placeholder="Leave blank to keep current password"
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer p-1"
-                tabIndex={-1}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
-              </button>
-            </div>
           </div>
           <div className="flex gap-3 pt-4">
             <button

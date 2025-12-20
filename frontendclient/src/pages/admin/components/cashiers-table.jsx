@@ -4,6 +4,7 @@ import { useState } from "react"
 import AddCashierModal from "./add-cashier-modal"
 import EditCashierModal from "./edit-cashier-modal"
 import DeleteCashierModal from "./delete-cashier-modal"
+import axios from "axios"
 
 export default function CashiersTable({ cashiers = [], onCashiersChange }) {
   const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -26,16 +27,25 @@ export default function CashiersTable({ cashiers = [], onCashiersChange }) {
     setShowAddModal(false)
   }
 
-  const handleAddCashierSubmit = (formData) => {
-    const newCashier = {
-      name: formData.name,
-      email: formData.email,
-      password: "defaultPass123", // Default password for new cashiers
+  const handleAddCashierSubmit = async ({ username, email, password, usertype }) => {
+
+    try {
+      const response = await axios.post('http://localhost:8080/admin/adduser', {
+        username,
+        email,
+        password,
+        usertype
+      });
+
+      if (onCashiersChange) {
+        await onCashiersChange();
+      }
+
+    } catch (err) {
+      console.log(err);
     }
-    
-    const updatedCashiers = [...cashiers, newCashier]
-    onCashiersChange(updatedCashiers)
-    handleCloseAddModal()
+
+    handleCloseAddModal();
   }
 
   const handleEdit = (cashier) => {
@@ -48,24 +58,30 @@ export default function CashiersTable({ cashiers = [], onCashiersChange }) {
     setSelectedCashier(null)
   }
 
-  const handleEditCashierSubmit = (originalName, formData) => {
-    const updatedCashiers = cashiers.map((c) =>
-      c.name === originalName
-        ? {
-            ...c,
-            name: formData.name,
-            email: formData.email,
-            // Only update password if a new one was provided
-            ...(formData.password && formData.password.trim() ? { password: formData.password } : {}),
-          }
-        : c
-    )
-    onCashiersChange(updatedCashiers)
-    handleCloseEditModal()
+  const handleEditCashierSubmit = async ({ id, editUsername, editEmail, editPoints, usertype }) => {
+
+    try {
+      const response = await axios.post('http://localhost:8080/admin/updateuser', {
+        editId: id,
+        editUsername,
+        editEmail,
+        editPoints,
+        usertype
+      });
+
+      if (onCashiersChange) {
+        await onCashiersChange();
+      }
+
+    } catch(err) {
+      console.log(err);
+    }
+
+    handleCloseEditModal();
   }
 
   const handleDelete = (cashier) => {
-    setCashierToDelete(cashier)
+    setCashierToDelete(cashier.id)
     setShowDeleteModal(true)
   }
 
@@ -74,9 +90,22 @@ export default function CashiersTable({ cashiers = [], onCashiersChange }) {
     setCashierToDelete(null)
   }
 
-  const handleConfirmDelete = () => {
-    const updatedCashiers = cashiers.filter((c) => c.name !== cashierToDelete.name)
-    onCashiersChange(updatedCashiers)
+  const handleConfirmDelete = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:8080/admin/deleteuser', {
+        userId: cashierToDelete,
+        usertype: 1
+      });
+
+      if (onCashiersChange) {
+        await onCashiersChange();
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
     handleCloseDeleteModal()
   }
 

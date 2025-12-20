@@ -4,16 +4,16 @@ import { useState, useEffect } from "react"
 import { Eye, EyeOff } from "lucide-react"
 
 export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, customer }) {
-  const [formData, setFormData] = useState({ username: "", email: "", points: 0, password: "" })
+  const [formData, setFormData] = useState({ editUsername: "", editEmail: "", editPoints: "", usertype: 2 })
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     if (customer) {
       setFormData({
-        username: customer.username,
-        email: customer.email,
-        points: customer.points,
-        password: "",
+        editUsername: customer.user_name,
+        editEmail: customer.email,
+        editPoints: customer.points,
+        usertype: 2
       })
     }
   }, [customer, isOpen])
@@ -26,20 +26,28 @@ export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, cus
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.username.trim() || !formData.email.trim()) {
+    if (!formData.editUsername.trim() || !formData.editEmail.trim()) {
       alert("Please fill in all fields")
       return
     }
 
-    onEditCustomer(customer.username, formData)
-    setFormData({ username: "", email: "", points: 0, password: "" })
+    await onEditCustomer({
+      id: customer.id,
+      editUsername: formData.editUsername,
+      editPoints: Number(formData.editPoints),
+      editEmail: formData.editEmail,
+      usertype: 2
+    })
+
+    handleClose();
+    //onEditCustomer(customer.username, formData)
+    //setFormData({ username: "", email: "", points: 0 })
   }
 
   const handleClose = () => {
-    setFormData({ username: "", email: "", points: 0, password: "" })
-    setShowPassword(false)
+    setFormData({ username: "", email: "", points: 0 })
     onClose()
   }
 
@@ -58,8 +66,8 @@ export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, cus
             <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
             <input
               type="text"
-              name="username"
-              value={formData.username}
+              name="editUsername"
+              value={formData.editUsername}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter customer username"
@@ -69,8 +77,8 @@ export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, cus
             <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
             <input
               type="email"
-              name="email"
-              value={formData.email}
+              name="editEmail"
+              value={formData.editEmail}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter customer email"
@@ -80,14 +88,14 @@ export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, cus
             <label className="block text-sm font-medium text-gray-700 mb-2">Points</label>
             <input
               type="number"
-              name="points"
-              value={formData.points}
+              name="editPoints"
+              value={formData.editPoints}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter points"
             />
           </div>
-          <div>
+          {/*<div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Password <span className="text-gray-500 text-xs">(optional)</span>
             </label>
@@ -114,7 +122,7 @@ export default function EditCustomerModal({ isOpen, onClose, onEditCustomer, cus
                 )}
               </button>
             </div>
-          </div>
+          </div>*/}
           <div className="flex gap-3 pt-4">
             <button
               type="button"

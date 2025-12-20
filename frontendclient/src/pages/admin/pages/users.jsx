@@ -91,6 +91,16 @@ export default function UsersPage() {
     listOfCashiers();
   }, [])
 
+  const refreshAllData = async () => {
+    await Promise.all([
+      numOfCustomers(),
+      numOfCashiers(),
+      sumOfPoints(),
+      listOfCustomers(),
+      listOfCashiers()
+    ])
+  }
+
   return (
     <div className="flex h-screen bg-amber-50">
       <Sidebar />
@@ -111,10 +121,10 @@ export default function UsersPage() {
           </div>
 
           {/* Customers Table */}
-          <CustomersTable customers={listCustomers} onCustomersChange={setListCustomers} />
+          <CustomersTable customers={listCustomers} onCustomersChange={refreshAllData} />
 
           {/* Cashiers Table */}
-          <CashiersTable cashiers={listCashiers} onCashiersChange={setListCashiers} />
+          <CashiersTable cashiers={listCashiers} onCashiersChange={refreshAllData} />
         </div>
       </main>
     </div>

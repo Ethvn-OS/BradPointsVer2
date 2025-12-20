@@ -4,6 +4,7 @@ import { useState } from "react"
 import AddCustomerModal from "./add-customer-modal"
 import EditCustomerModal from "./edit-customer-modal"
 import DeleteConfirmModal from "./delete-confirm-modal"
+import axios from "axios"
 
 export default function CustomersTable({ customers = [], onCustomersChange }) {
   const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -26,21 +27,25 @@ export default function CustomersTable({ customers = [], onCustomersChange }) {
     setShowAddModal(false)
   }
 
-  const [values, setValues] = useState({
-    // insert lang nya
-  })
+  const handleAddCustomerSubmit = async ({ username, email, password, usertype }) => {
 
-  const handleAddCustomerSubmit = (formData) => {
-    const newCustomer = {
-      username: formData.username,
-      email: formData.email,
-      points: 0,
-      password: "defaultPass123", // Default password for new customers
+    try {
+      const response = await axios.post('http://localhost:8080/admin/adduser', {
+        username,
+        email,
+        password,
+        usertype
+      });
+
+      if (onCustomersChange) {
+        await onCustomersChange();
+      }
+
+    } catch (err) {
+      console.log(err);
     }
 
-    const updatedCustomers = [...customers, newCustomer]
-    onCustomersChange(updatedCustomers)
-    handleCloseAddModal()
+    handleCloseAddModal();
   }
 
   const handleEdit = (customer) => {
@@ -53,28 +58,49 @@ export default function CustomersTable({ customers = [], onCustomersChange }) {
     setSelectedCustomer(null)
   }
 
-  const handleEditCustomerSubmit = (originalUsername, formData) => {
-    // Ensure points is always stored as a number to avoid string concatenation issues
-    const parsedPoints = Number(formData.points)
+  const handleEditCustomerSubmit = async ({ id, editUsername, editPoints, editEmail, usertype }) => {
+    try {
+      const response = await axios.post('http://localhost:8080/admin/updateuser', {
+        editId: id,
+        editUsername,
+        editPoints,
+        editEmail,
+        usertype
+      })
 
-    const updatedCustomers = customers.map((c) =>
-      c.username === originalUsername
-        ? {
-            ...c,
-            username: formData.username,
-            email: formData.email,
-            points: Number.isNaN(parsedPoints) ? 0 : parsedPoints,
-            // Only update password if a new one was provided
-            ...(formData.password && formData.password.trim() ? { password: formData.password } : {}),
-          }
-        : c
-    )
-    onCustomersChange(updatedCustomers)
-    handleCloseEditModal()
+      if (onCustomersChange) {
+        await onCustomersChange();
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
+
+    handleCloseEditModal();
   }
 
+  // const handleEditCustomerSubmit = (originalUsername, formData) => {
+  //   // Ensure points is always stored as a number to avoid string concatenation issues
+  //   const parsedPoints = Number(formData.points)
+
+  //   const updatedCustomers = customers.map((c) =>
+  //     c.username === originalUsername
+  //       ? {
+  //           ...c,
+  //           username: formData.username,
+  //           email: formData.email,
+  //           points: Number.isNaN(parsedPoints) ? 0 : parsedPoints,
+  //           // Only update password if a new one was provided
+  //           ...(formData.password && formData.password.trim() ? { password: formData.password } : {}),
+  //         }
+  //       : c
+  //   )
+  //   onCustomersChange(updatedCustomers)
+  //   handleCloseEditModal()
+  // }
+
   const handleDelete = (customer) => {
-    setCustomerToDelete(customer)
+    setCustomerToDelete(customer.id)
     setShowDeleteModal(true)
   }
 
@@ -83,9 +109,27 @@ export default function CustomersTable({ customers = [], onCustomersChange }) {
     setCustomerToDelete(null)
   }
 
-  const handleConfirmDelete = () => {
-    const updatedCustomers = customers.filter((c) => c.username !== customerToDelete.username)
-    onCustomersChange(updatedCustomers)
+  const handleConfirmDelete = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:8080/admin/deleteuser', {
+        userId: customerToDelete,
+        usertype: 2
+      });
+      console.log(response);
+
+      if (onCustomersChange) {
+        await onCustomersChange();
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
+
+
+    // const updatedCustomers = customers.filter((c) => c.username !== customerToDelete.username)
+    // onCustomersChange(updatedCustomers)
     handleCloseDeleteModal()
   }
 

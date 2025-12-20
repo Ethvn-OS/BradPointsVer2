@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { Eye, EyeOff } from "lucide-react"
 
 export default function AddCashierModal({ isOpen, onClose, onAddCashier }) {
-  const [formData, setFormData] = useState({ name: "", email: "" })
+  const [formData, setFormData] = useState({ username: "", email: "", password: "", usertype: 1 })
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleFormChange = (e) => {
     const { name, value } = e.target
@@ -13,20 +15,39 @@ export default function AddCashierModal({ isOpen, onClose, onAddCashier }) {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.name.trim() || !formData.email.trim()) {
+
+    if (!formData.username.trim() || !formData.email.trim()) {
       alert("Please fill in all fields")
       return
     }
 
-    onAddCashier(formData)
-    setFormData({ name: "", email: "" })
+    try {
+      await onAddCashier({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        usertype: 1
+      })
+
+      handleClose();
+
+    } catch (err) {
+      console.log(err);
+    }
+
+    // onAddCashier(formData)
+    // setFormData({ name: "", email: "" })
   }
 
   const handleClose = () => {
-    setFormData({ name: "", email: "" })
+    setFormData({ sername: "", email: "", password: "", usertype: 1 })
     onClose()
+  }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
   }
 
   if (!isOpen) return null
@@ -40,8 +61,8 @@ export default function AddCashierModal({ isOpen, onClose, onAddCashier }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="username"
+              value={formData.username}
               onChange={handleFormChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter cashier name"
@@ -57,6 +78,34 @@ export default function AddCashierModal({ isOpen, onClose, onAddCashier }) {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter cashier email"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Password <span className="text-gray-500 text-xs">(optional)</span>
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleFormChange}
+                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
+                placeholder="Leave blank to keep current password"
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer p-1"
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
           <div className="flex gap-3 pt-4">
             <button

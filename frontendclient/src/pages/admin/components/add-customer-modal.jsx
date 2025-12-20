@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { Eye, EyeOff } from "lucide-react"
 
 export default function AddCustomerModal({ isOpen, onClose, onAddCustomer }) {
-  const [formData, setFormData] = useState({ username: "", email: "" })
+  const [formData, setFormData] = useState({ username: "", email: "", password: "", usertype: 2 })
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleFormChange = (e) => {
     const { name, value } = e.target
@@ -13,20 +15,37 @@ export default function AddCustomerModal({ isOpen, onClose, onAddCustomer }) {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+
     if (!formData.username.trim() || !formData.email.trim()) {
       alert("Please fill in all fields")
       return
     }
 
-    onAddCustomer(formData)
-    setFormData({ username: "", email: "" })
+    try {
+      await onAddCustomer({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        usertype: 2
+      })
+      handleClose();
+    } catch (err) {
+      console.log(err);
+    }
+
+    // onAddCustomer(formData)
+    // setFormData({ username: "", email: "" })
   }
 
   const handleClose = () => {
-    setFormData({ username: "", email: "" })
+    setFormData({ username: "", email: "", password: "", usertype: 2  })
     onClose()
+  }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
   }
 
   if (!isOpen) return null
@@ -57,6 +76,34 @@ export default function AddCustomerModal({ isOpen, onClose, onAddCustomer }) {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
               placeholder="Enter customer email"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Password <span className="text-gray-500 text-xs">(optional)</span>
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleFormChange}
+                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
+                placeholder="Leave blank to keep current password"
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer p-1"
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
           <div className="flex gap-3 pt-4">
             <button
