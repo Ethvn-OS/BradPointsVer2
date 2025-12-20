@@ -36,11 +36,16 @@ const CashierHome = () => {
         fetchUser();
     }, [])
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    }
+
     // here i add ang imong related code yza
 
     return (
         <div className="min-h-screen flex flex-col">
-            {page !== 'submitOrder' && <Header />}
+            {page !== 'submitOrder' && <Header onLogout={handleLogout} />}
 
             <div className="flex-1 relative flex items-center justify-center">
                 {page !== 'submitOrder' && <BackgroundImage />}
