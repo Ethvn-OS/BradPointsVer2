@@ -12,6 +12,7 @@ import RedeemVoucher from './components/RedeemVoucher';
 const CashierHome = () => {
     const navigate = useNavigate();
     const [page, setPage] = useState('home');
+    const [selectedCustomerId, setSelectedCustomerId] = useState(null);
 
     const fetchUser = async () => {
         try {
@@ -45,15 +46,15 @@ const CashierHome = () => {
                 {page !== 'submitOrder' && <BackgroundImage />}
                 {page === 'home' && (
                     <LoginCard 
-                        onSubmitOrder={() => setPage('submitOrder')} 
-                        onRedeem={() => setPage('redeemVoucher')} 
+                        onSubmitOrder={(customerId) => {setSelectedCustomerId(customerId); setPage('submitOrder');}}
+                        onRedeem={(customerId) => { setSelectedCustomerId(customerId); setPage('redeemVoucher'); }}
                     />
                 )}
                 {page === 'submitOrder' && (
-                    <RestaurantOrderingUI onGoBack={() => setPage('home')} />
+                    <RestaurantOrderingUI onGoBack={() => setPage('home')} customerId={selectedCustomerId} />
                 )}
                 {page === 'redeemVoucher' && (
-                    <RedeemVoucher onGoBack={() => setPage('home')} />
+                    <RedeemVoucher onGoBack={() => setPage('home')} customerId={selectedCustomerId} />
                 )}
             </div>
         </div>

@@ -1,22 +1,49 @@
 import { useState } from 'react';
 import cashierIcon from '../../../assets/images/cashierIcon.png';
+import axios from "axios"
 
 function LoginCard({ onSubmitOrder, onRedeem }) {
   const [customerId, setCustomerId] = useState('');
   const [showActions, setShowActions] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = () => {
-    const trimmed = customerId.trim();
-    // Validate: exactly 8 numeric digits
-    if (!/^\d{8}$/.test(trimmed)) {
-      setErrorMsg(`User ID (${trimmed}) not found. Please enter a valid ID.`);
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:8080/cashier/cashierhome', {
+        userId: customerId
+      });
+      if (response.data.found == true) {
+        setErrorMsg('');
+        console.log('Customer ID submitted:', customerId);
+        setShowActions(true);
+      }
+
+      if (response.data.found == false) {
+        setErrorMsg(`User ID (${customerId}) not found. Please enter a valid ID.`);
+        setShowActions(false);
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+      setErrorMsg(`User ID (${customerId}) not found. Please enter a valid ID.`);
       setShowActions(false);
-      return;
     }
-    setErrorMsg('');
-    console.log('Customer ID submitted:', trimmed);
-    setShowActions(true);
+
+
+
+    // const trimmed = customerId.trim();
+    // // Validate: exactly 8 numeric digits
+    // if (!/^\d{8}$/.test(trimmed)) {
+    //   setErrorMsg(`User ID (${trimmed}) not found. Please enter a valid ID.`);
+    //   setShowActions(false);
+    //   return;
+    // }
+    // setErrorMsg('');
+    // console.log('Customer ID submitted:', trimmed);
+    // setShowActions(true);
   };
 
   const handleGoBack = () => {
@@ -25,7 +52,7 @@ function LoginCard({ onSubmitOrder, onRedeem }) {
 
   const handleOrderSubmit = () => {
     if (typeof onSubmitOrder === 'function') {
-      onSubmitOrder();
+      onSubmitOrder(customerId);
       return;
     }
     console.log('Navigating to Submit Order page');
@@ -33,7 +60,7 @@ function LoginCard({ onSubmitOrder, onRedeem }) {
 
   const handleRedeemVoucher = () => {
     if (typeof onRedeem === 'function') {
-      onRedeem();
+      onRedeem(customerId);
       return;
     }
     console.log('Navigating to Redeem Voucher page');

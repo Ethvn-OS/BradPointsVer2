@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ArrowLeft, Plus, Minus } from 'lucide-react';
+import axios from "axios"
 
-const RestaurantOrderingUI = ({ onGoBack }) => {
+const RestaurantOrderingUI = ({ onGoBack, customerId }) => {
   const [activeCategory, setActiveCategory] = useState('All Items');
   const [searchQuery, setSearchQuery] = useState('');
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [cart, setCart] = useState({ });
   const [currentDateTime, setCurrentDateTime] = useState('');
+  const [menuItems, setMenuItems] = useState([]);
+  const [submitMessage, setSubmitMessage] = useState('');
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -26,27 +29,44 @@ const RestaurantOrderingUI = ({ onGoBack }) => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const menuItems = [
-    { id: 1, name: 'Bacon Rolls', category: 'Rolls', points: 2, image: '/src/assets/images/Bacon Roll.jpg' },
-    { id: 2, name: 'Batchoy', category: 'Rice Meals & Soups', points: 5, image: '/src/assets/images/Batchoy.jpg' },
-    { id: 3, name: 'Beef Rice', category: 'Rice Meals & Soups', points: 5, image: '/src/assets/images/Beef Rice.jpg' },
-    { id: 4, name: 'Chicken Feet', category: 'Side Dishes', points: 3, image: '/src/assets/images/Chicken Feet.jpg' },
-    { id: 5, name: 'Chicken Rice', category: 'Side Dishes', points: 3, image: '/src/assets/images/Chicken Rice.jpg' },
-    { id: 6, name: 'Crab Pincer', category: 'Side Dishes', points: 3, image: '/src/assets/images/Crab Pincer.jpg' },
-    { id: 7, name: 'Empress Roll', category: 'Rolls', points: 2, image: '/src/assets/images/Empress Roll.jpg' },
-    { id: 8, name: 'Fried Wonton', category: 'Side Dishes', points: 3, image: '/src/assets/images/Fried Wanton.jpg' },
-    { id: 9, name: 'Ngohiong', category: 'Side Dishes', points: 3, image: '/src/assets/images/Ngohiong.jpg' },
-    { id: 10, name: 'Pizza Roll', category: 'Rolls', points: 2, image: '/src/assets/images/Pizza Roll.jpg' },
-    { id: 11, name: 'Shrimp Balls', category: 'Side Dishes', points: 3, image: '/src/assets/images/Shrimp Balls.jpg' },
-    { id: 12, name: 'Siomai', category: 'Side Dishes', points: 3, image: '/src/assets/images/Siomai.jpg' },
-    { id: 13, name: 'Siopao', category: 'Side Dishes', points: 3, image: '/src/assets/images/Siopao.jpg' },
-    { id: 14, name: 'Spring Rolls', category: 'Rolls', points: 2, image: '/src/assets/images/Spring Rolls.jpg' },
-    { id: 15, name: 'Steamed Chicken', category: 'Side Dishes', points: 3, image: '/src/assets/images/Steamed Chicken.jpg' },
-    { id: 16, name: 'Steamed Rice', category: 'Rice Meals & Soups', points: 5, image: '/src/assets/images/Steamed Rice.jpg' },
-    { id: 17, name: 'Sweet and Sour Pork', category: 'Side Dishes', points: 3, image: '/src/assets/images/Sweet and Sour.jpg' },
-  ];
+  const allMenu = async () => {
+    const response = await axios.get("http://localhost:8080/cashier/cashierprod");
+    setMenuItems(response.data.products);
+    console.log(response.data.products);
+  }
 
-  const categories = ['All Items', 'Rice Meals & Soups', 'Rolls', 'Side Dishes'];
+  useEffect(() => {
+    allMenu();
+  }, [])
+
+  const handleSubmit = async (e) => {
+    try {
+      const orderData = {
+        userId: customerId, // from LoginCard
+        totalPoints: totalPoints,
+        orderItems: orderItems.filter(item => item.qty > 0).map(item => ({
+          name: item.name,
+          quantity: item.qty,
+          points: item.points,
+          totalPoints: item.points * item.qty
+        }))
+      };
+
+      const response = await axios.post('http://localhost:8080/cashier/cashierorder', orderData);
+
+      if (response.data.success) {
+        setSubmitMessage(response.data.message);
+        setOrderSubmitted(true);
+      } else {
+        alert('Failed to submit order: ' + response.data.message);
+      }
+    } catch (err) {
+      console.error('Submit error:', err);
+      alert('Error submitting order. Please try again.');
+    }
+  }
+
+  const categories = ['All Items', 'Rice Meals and Soup', 'Rolls', 'Other Side Dishes'];
 
   const updateQuantity = (itemName, delta) => {
     setCart(prev => {
@@ -62,7 +82,7 @@ const RestaurantOrderingUI = ({ onGoBack }) => {
   };
 
   const getItemPoints = (itemName) => {
-    const item = menuItems.find(i => i.name === itemName);
+    const item = menuItems.find(i => i.prod_name === itemName);
     return item ? item.points : 0;
   };
 
@@ -72,19 +92,19 @@ const RestaurantOrderingUI = ({ onGoBack }) => {
 
   // Filter menu items based on search query and active category
   const filteredMenuItems = menuItems.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = activeCategory === 'All Items' || item.category === activeCategory;
+    const matchesSearch = item.prod_name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = activeCategory === 'All Items' || item.category_name === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
   const orderItems = Object.entries(cart).map(([name, qty]) => {
-    const item = menuItems.find(i => i.name === name);
+    const item = menuItems.find(i => i.prod_name === name);
     return {
       name,
-      category: item?.category || 'Unknown',
+      category: item?.category_name || 'Unknown',
       qty,
       points: item?.points || 0,
-      image: item?.image || '/api/placeholder/64/64'
+      image: item?.prod_image || '/api/placeholder/64/64'
     };
   });
 
@@ -129,9 +149,9 @@ const RestaurantOrderingUI = ({ onGoBack }) => {
                 }`}
               >
                 {cat === 'All Items' && <span className="text-lg">☰</span>}
-                {cat === 'Rice Meals & Soups' && <span className="text-lg">🍜</span>}
+                {cat === 'Rice Meals and Soup' && <span className="text-lg">🍜</span>}
                 {cat === 'Rolls' && <span className="text-lg">🥟</span>}
-                {cat === 'Side Dishes' && <span className="text-lg">🍽️</span>}
+                {cat === 'Other Side Dishes' && <span className="text-lg">🍽️</span>}
                 {cat}
               </button>
             ))}
@@ -143,22 +163,22 @@ const RestaurantOrderingUI = ({ onGoBack }) => {
               filteredMenuItems.map(item => (
                 <div key={item.id} className="bg-white rounded-lg overflow-hidden shadow">
                   <div className="aspect-square bg-gray-200">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    <img src={item.prod_image} alt={item.prod_name} className="w-full h-full object-cover" />
                   </div>
                   <div className="bg-red-700 text-white p-3">
-                    <h3 className="font-semibold text-sm mb-0.5">{item.name}</h3>
-                    <p className="text-xs opacity-90 mb-2">{item.category}</p>
+                    <h3 className="font-semibold text-sm mb-0.5">{item.prod_name}</h3>
+                    <p className="text-xs opacity-90 mb-2">{item.category_name}</p>
                     <p className="text-xs mb-2">{item.points} points</p>
                     <div className="flex items-center justify-between">
                       <button 
-                        onClick={() => updateQuantity(item.name, -1)}
+                        onClick={() => updateQuantity(item.prod_name, -1)}
                         className="w-7 h-7 flex items-center justify-center bg-red-800 rounded hover:bg-red-900"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
-                      <span className="text-sm">{cart[item.name] || 0}</span>
+                      <span className="text-sm">{cart[item.prod_name] || 0}</span>
                       <button 
-                        onClick={() => updateQuantity(item.name, 1)}
+                        onClick={() => updateQuantity(item.prod_name, 1)}
                         className="w-7 h-7 flex items-center justify-center bg-red-800 rounded hover:bg-red-900"
                       >
                         <Plus className="w-4 h-4" />
@@ -249,9 +269,9 @@ const RestaurantOrderingUI = ({ onGoBack }) => {
                 {/* Submit Button */}
                 <button 
                   className="w-full py-3 bg-red-700 text-white rounded font-semibold hover:bg-red-800"
-                  onClick={() => {
-                    setOrderSubmitted(true);
-                  }}
+                  onClick={handleSubmit}   //{() => {
+                  //  setOrderSubmitted(true);
+                  //}}
                 >
                   Submit
                 </button>
@@ -271,7 +291,8 @@ const RestaurantOrderingUI = ({ onGoBack }) => {
                   Success!
                 </h2>
                 <p className="text-center text-gray-500 italic text-sm mb-6">
-                  {totalPoints} Points successfully transferred to user 12345
+                  {/*{totalPoints} Points successfully transferred to user 12345*/}
+                  {`${totalPoints} Points successfully transferred to user ${customerId}`}
                 </p>
                 
                 {/* Close Button */}
@@ -295,3 +316,25 @@ const RestaurantOrderingUI = ({ onGoBack }) => {
 };
 
 export default RestaurantOrderingUI;
+
+
+
+// const menuItems = [
+  //   { id: 1, name: 'Bacon Rolls', category: 'Rolls', points: 2, image: '/src/assets/images/Bacon Roll.jpg' },
+  //   { id: 2, name: 'Batchoy', category: 'Rice Meals & Soups', points: 5, image: '/src/assets/images/Batchoy.jpg' },
+  //   { id: 3, name: 'Beef Rice', category: 'Rice Meals & Soups', points: 5, image: '/src/assets/images/Beef Rice.jpg' },
+  //   { id: 4, name: 'Chicken Feet', category: 'Side Dishes', points: 3, image: '/src/assets/images/Chicken Feet.jpg' },
+  //   { id: 5, name: 'Chicken Rice', category: 'Side Dishes', points: 3, image: '/src/assets/images/Chicken Rice.jpg' },
+  //   { id: 6, name: 'Crab Pincer', category: 'Side Dishes', points: 3, image: '/src/assets/images/Crab Pincer.jpg' },
+  //   { id: 7, name: 'Empress Roll', category: 'Rolls', points: 2, image: '/src/assets/images/Empress Roll.jpg' },
+  //   { id: 8, name: 'Fried Wonton', category: 'Side Dishes', points: 3, image: '/src/assets/images/Fried Wanton.jpg' },
+  //   { id: 9, name: 'Ngohiong', category: 'Side Dishes', points: 3, image: '/src/assets/images/Ngohiong.jpg' },
+  //   { id: 10, name: 'Pizza Roll', category: 'Rolls', points: 2, image: '/src/assets/images/Pizza Roll.jpg' },
+  //   { id: 11, name: 'Shrimp Balls', category: 'Side Dishes', points: 3, image: '/src/assets/images/Shrimp Balls.jpg' },
+  //   { id: 12, name: 'Siomai', category: 'Side Dishes', points: 3, image: '/src/assets/images/Siomai.jpg' },
+  //   { id: 13, name: 'Siopao', category: 'Side Dishes', points: 3, image: '/src/assets/images/Siopao.jpg' },
+  //   { id: 14, name: 'Spring Rolls', category: 'Rolls', points: 2, image: '/src/assets/images/Spring Rolls.jpg' },
+  //   { id: 15, name: 'Steamed Chicken', category: 'Side Dishes', points: 3, image: '/src/assets/images/Steamed Chicken.jpg' },
+  //   { id: 16, name: 'Steamed Rice', category: 'Rice Meals & Soups', points: 5, image: '/src/assets/images/Steamed Rice.jpg' },
+  //   { id: 17, name: 'Sweet and Sour Pork', category: 'Side Dishes', points: 3, image: '/src/assets/images/Sweet and Sour.jpg' },
+  // ];

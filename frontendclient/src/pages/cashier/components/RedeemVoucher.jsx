@@ -1,26 +1,73 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import axios from "axios"
 
-function RedeemVoucher({ onGoBack }) {
+function RedeemVoucher({ onGoBack, customerId }) {
   const [voucherCode, setVoucherCode] = useState('');
   const [confirmationMode, setConfirmationMode] = useState(false);
   const [claimSuccessMode, setClaimSuccessMode] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    // setConfirmationMode(true);
+    e.preventDefault();
+    if (!voucherCode.trim()) {
+      setErrorMsg('Please enter a voucher code');
+      return;
+    }
+    setErrorMsg('');
     setConfirmationMode(true);
   };
 
-  const handleClaim = () => {
+  const handleClaim = async (e) => {
+    e.preventDefault();
     console.log('Voucher claimed:', voucherCode);
+
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.post('http://localhost:8080/cashier/cashierredeem', {
+        redeemvouch: voucherCode,
+        customerId: customerId
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      if (response.status === 201) {
+        setSuccessMsg(response.data.message);
+        setClaimSuccessMode(true);
+        setConfirmationMode(false);
+        setVoucherCode('');
+      }
+    } catch (err) {
+      console.error('Redeem error:', err);
+      if (err.response?.status === 404) {
+        setErrorMsg(`Voucher ${voucherCode} not found for User ID ${customerId}`);
+      } else if (err.response?.status === 409) {
+        setErrorMsg(err.response.data.message);
+      } else {
+        setErrorMsg(err.response?.data?.message || 'Failed to claim voucher. Please try again.');
+      }
+      setConfirmationMode(false);
+    }
+
     // In a real application, you would send voucherCode to a backend for processing.
     // Assuming successful claim for now:
-    setClaimSuccessMode(true);
-    setConfirmationMode(false); // Hide confirmation, show success
+    // setClaimSuccessMode(true);
+    // setConfirmationMode(false); // Hide confirmation, show success
   };
 
   const handleBack = () => {
     setConfirmationMode(false);
+    setErrorMsg('');
   };
+
+  const handleClose = () => {
+    setClaimSuccessMode(false);
+    setSuccessMsg('');
+    setVoucherCode('');
+    onGoBack();
+  }
 
   return (
     <div className="relative z-10 bg-white rounded-lg shadow-lg ring-1 ring-red-600 p-8 w-full max-w-lg h-96">
@@ -46,13 +93,18 @@ function RedeemVoucher({ onGoBack }) {
             Redeem Voucher
           </h2>
 
+          {/* Error message */}
+          {errorMsg && (
+            <p className="text-xs text-red-600 italic mb-4">{errorMsg}</p>
+          )}
+
           {/* Voucher code input */}
           <div className="mb-8">
             <input
               type="text"
               placeholder="Enter customer voucher code"
               value={voucherCode}
-              onChange={(e) => setVoucherCode(e.target.value)}
+              onChange={(e) => {setVoucherCode(e.target.value); if (errorMsg) setErrorMsg(''); }}
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
             />
           </div>
@@ -98,11 +150,11 @@ function RedeemVoucher({ onGoBack }) {
             SUCCESS!
           </h2>
           <p className="italic text-gray-500 text-sm mb-10">
-            Voucher {voucherCode} claimed by user {"USER_ID"}
+            {`Voucher ${voucherCode} claimed by user ${customerId}`}
           </p>
           <div className="flex justify-center">
             <button
-              onClick={onGoBack}
+              onClick={/*onGoBack*/ handleClose}
               className="px-8 py-2 bg-red-700 text-white rounded font-semibold hover:bg-red-800 transition-colors"
             >
               Close
