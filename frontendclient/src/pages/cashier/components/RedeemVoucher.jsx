@@ -82,7 +82,7 @@ function RedeemVoucher({ onGoBack, customerId }) {
       {/* Top middle icon placeholder */}
       <div className="flex justify-center mb-6 mt-2">
         <div className="w-9 h-9 flex items-center justify-center">
-          <img src="/src/assets/voucherImg.png" alt="voucher icon" className="w-full h-full object-contain" />
+          <img src="/src/assets/images/voucherIcon.png" alt="voucher icon" className="w-full h-full object-contain" />
         </div>
       </div>
 

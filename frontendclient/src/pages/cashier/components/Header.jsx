@@ -34,7 +34,7 @@ function Header() {
     }, []);
   
     return (
-      <div className="relative z-20 bg-bp-red text-white px-6 py-3 flex justify-between items-center">
+      <div className="relative z-20 bg-red-800 text-white px-6 py-3 flex justify-between items-center">
         <span className="text-sm">{currentDateTime}</span>
         <div className="flex items-center gap-2">
           <button onClick={handleExit} title="Exit" className="hover:bg-bp-red p-1 rounded">
