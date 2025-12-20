@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePoints } from '../context/PointsContext';
 
-const RewardsSection = ({ sectionRewards = [] }) => {
+const RewardsSection = ({ sectionRewards = [], onViewAllRewards }) => {
   const [selectedReward, setSelectedReward] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -65,6 +65,9 @@ const RewardsSection = ({ sectionRewards = [] }) => {
           <button 
             className="px-6 py-2 bg-br-red text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
             onClick={() => {
+              if (onViewAllRewards) {
+                onViewAllRewards();
+              }
               // Navigate to rewards tab - you can update this to change activeTab if needed
               console.log('Navigate to rewards tab');
             }}

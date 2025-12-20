@@ -6,6 +6,7 @@ import RewardsSection from './RewardsSection'
 import FeedbackSection from './FeedbackSection'
 
 const HomeTab = ({ user, rewards = [], setActiveTab }) => {
+
   return (
     <div className='px-2 flex flex-col gap-4'>
 
@@ -33,7 +34,7 @@ const HomeTab = ({ user, rewards = [], setActiveTab }) => {
       </div>
 
       <div className='w-full flex flex-col justify-center items-center mt-6'>
-            <RewardsSection sectionRewards={rewards} />
+            <RewardsSection sectionRewards={rewards} onViewAllRewards={() => setActiveTab('rewards')} />
       </div>
 
       <div className='w-full flex flex-col justify-center items-center mt-6'>
