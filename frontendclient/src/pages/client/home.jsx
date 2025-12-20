@@ -6,7 +6,6 @@ import HomeTab from './components/HomeTab'
 import RewardsTab from './components/RewardsTab'
 import VouchersTab from './components/VouchersTab'
 import NotificationsTab from './components/NotificationsTab'
-import FeedbackTab from './components/FeedbackTab';
 import FeedbackSection from './components/FeedbackSection';
 import ProfilePage from './components/ProfilePage'
 import { mockData } from './mockData'
@@ -142,7 +141,7 @@ const Home = () => {
                 <Sidebar activeTab={activeTab} onTabChange={setActiveTab} userProfile={user} onProfileClick={() => setActiveTab('profile')} onLogout={handleLogout} />
                 <main className='flex-1 p-3 overflow-y-auto bg-[#F2EAD3]'>
                     {activeTab === 'home' ? (
-                        <HomeTab user={user} rewards={rewards} />
+                        <HomeTab user={user} rewards={rewards} setActiveTab={setActiveTab} />
                     ) : activeTab === 'rewards' ? (
                         <RewardsTab rewards={rewards} user={user} />
                     ) : activeTab === 'vouchers' ? (
@@ -152,7 +151,7 @@ const Home = () => {
                     ) : activeTab === 'profile' ? (
                         <ProfilePage user={user} />
                     ) : activeTab === 'feedback' ? (
-                        <FeedbackSection user={user} />
+                        <FeedbackSection user={user} isStandalonePage={true} />
                     ) : (
                         <ActiveContent user={user} />
                     )}
