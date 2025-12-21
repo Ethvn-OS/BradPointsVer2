@@ -30,7 +30,7 @@ export default function CustomersTable({ customers = [], onCustomersChange }) {
   const handleAddCustomerSubmit = async ({ username, email, password, usertype }) => {
 
     try {
-      const response = await axios.post('http://localhost:8080/admin/adduser', {
+      const response = await axios.post('https://bradpoints.dcism.org/admin/adduser', {
         username,
         email,
         password,
@@ -60,7 +60,7 @@ export default function CustomersTable({ customers = [], onCustomersChange }) {
 
   const handleEditCustomerSubmit = async ({ id, editUsername, editPoints, editEmail, usertype }) => {
     try {
-      const response = await axios.post('http://localhost:8080/admin/updateuser', {
+      const response = await axios.post('https://bradpoints.dcism.org/admin/updateuser', {
         editId: id,
         editUsername,
         editPoints,
@@ -113,7 +113,7 @@ export default function CustomersTable({ customers = [], onCustomersChange }) {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8080/admin/deleteuser', {
+      const response = await axios.post('https://bradpoints.dcism.org/admin/deleteuser', {
         userId: customerToDelete,
         usertype: 2
       });

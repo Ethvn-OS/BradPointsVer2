@@ -29,7 +29,7 @@ export default function AddProductModal({ isOpen, onClose, onAddProduct }) {
 
     // onAddProduct(formData)
     try {
-      const response = await axios.post("http://localhost:8080/admin/createprod", {
+      const response = await axios.post("https://bradpoints.dcism.org/admin/createprod", {
         prodname: formData.prodname,
         prodcategory: Number(formData.prodcategory)
       });

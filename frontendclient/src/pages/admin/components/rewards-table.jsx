@@ -29,7 +29,7 @@ export default function RewardsTable({ rewards = [], onRewardsChange }) {
 
   const handleAddRewardSubmit = async ({ rewardname, rewarddesc, rewardpoints }) => {
     try {
-      const response = await axios.post("http://localhost:8080/admin/createreward", {
+      const response = await axios.post("https://bradpoints.dcism.org/admin/createreward", {
         rewardname,
         rewarddesc,
         rewardpoints
@@ -58,7 +58,7 @@ export default function RewardsTable({ rewards = [], onRewardsChange }) {
 
   const handleEditRewardSubmit = async ({ id, editrewname, editrewdesc, editrewpoints }) => {
     try {
-      const response = await axios.post("http://localhost:8080/admin/updatereward", {
+      const response = await axios.post("https://bradpoints.dcism.org/admin/updatereward", {
         editId: id,
         editrewname,
         editrewdesc,
@@ -90,7 +90,7 @@ export default function RewardsTable({ rewards = [], onRewardsChange }) {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8080/admin/deletereward", {
+      const response = await axios.post("https://bradpoints.dcism.org/admin/deletereward", {
         deleteId: rewardToDelete
       });
       console.log(response);

@@ -12,7 +12,7 @@ function LoginCard({ onSubmitOrder, onRedeem }) {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8080/cashier/cashierhome', {
+      const response = await axios.post('https://bradpoints.dcism.org/cashier/cashierhome', {
         userId: customerId
       });
       if (response.data.found == true) {

@@ -8,7 +8,7 @@ export default function VoucherClaimHistory() {
   const [claimHistory, setClaimHistory] = useState([]);
 
   const claimHist = async () => {
-    const response = await axios.get("http://localhost:8080/admin/allredem");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/allredem");
     setClaimHistory(response.data.allredem);
     console.log(response.data.allredem);
   }

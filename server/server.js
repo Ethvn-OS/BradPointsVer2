@@ -7,7 +7,7 @@ import cors from 'cors'
 
 const app = express();
 const corsOptions = {
-    origin: ["http://localhost:5173"]
+    origin: ["https://bradpoints.dcism.org", "http://localhost:8080"]
 };
 
 app.use(cors(corsOptions));
@@ -17,7 +17,7 @@ app.use('/customer', custRouter);
 app.use('/cashier', cashierRouter); // so inig call from the frontend gamita ang localhost:8080/cashier/(insert)
 app.use('/admin', adminRouter);
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, "0.0.0.0", () => {
     console.log('Server started on port 8080');
 });
 

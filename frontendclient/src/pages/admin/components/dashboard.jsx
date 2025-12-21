@@ -11,13 +11,13 @@ export default function Dashboard() {
   const [totalRedem, setTotalRedem] = useState(0);
 
   const numOfActiveRewards = async () => {
-    const response = await axios.get("http://localhost:8080/admin/countReward");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/countReward");
     setActiveRewards(response.data.count);
     console.log(response.data.count);
   }
 
   const totalRedemptions = async () => {
-    const response = await axios.get("http://localhost:8080/admin/countallredem");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/countallredem");
     setTotalRedem(response.data.redem);
     console.log(response.data.redem);
   }

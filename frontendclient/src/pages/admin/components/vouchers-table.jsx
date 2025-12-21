@@ -8,7 +8,7 @@ export default function VouchersTable() {
   const [redemvouch, setRedemVouch] = useState([]);
 
   const vouchredem = async () => {
-    const response = await axios.get("http://localhost:8080/admin/vouchredem");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/vouchredem");
     setRedemVouch(response.data.vouchredem);
     console.log(response.data.vouchredem);
   }

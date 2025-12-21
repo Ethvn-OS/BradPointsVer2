@@ -37,7 +37,7 @@ const Login = () => {
     try {
       localStorage.removeItem('token');
 
-      const response = await axios.post('http://localhost:8080/auth/login', values);
+      const response = await axios.post('https://bradpoints.dcism.org/auth/login', values);
       console.log(response);
       if (response.status === 201) {
         const { token, usertype } = response.data;

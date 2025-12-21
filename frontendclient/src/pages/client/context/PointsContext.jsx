@@ -30,7 +30,7 @@ export const PointsProvider = ({ children, points, updateUserPoints, /*useMockDa
     const fetchNotifications = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:8080/customer/getnotifs', {
+        const res = await axios.get('https://bradpoints.dcism.org/customer/getnotifs', {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = res.data?.notifications || [];
@@ -119,7 +119,7 @@ export const PointsProvider = ({ children, points, updateUserPoints, /*useMockDa
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8080/customer/redeemreward', {
+      const response = await axios.post('https://bradpoints.dcism.org/customer/redeemreward', {
         rewardname: reward.reward_name,
         rewardpoints: reward.reward_points ?? reward.points,
         rewardid: reward.id
@@ -204,7 +204,7 @@ export const PointsProvider = ({ children, points, updateUserPoints, /*useMockDa
   const isRewardRedeemed = async (rewardId) => {
 
     const token = localStorage.getItem('token');
-    const {data} = await axios.post('http://localhost:8080/customer/checkredeem', {
+    const {data} = await axios.post('https://bradpoints.dcism.org/customer/checkredeem', {
       rewardId: Number(rewardId)
     }, {
       headers: { Authorization: `Bearer ${token}` }
@@ -233,7 +233,7 @@ export const PointsProvider = ({ children, points, updateUserPoints, /*useMockDa
     // }
     
     const token = localStorage.getItem('token');
-    const {data} = await axios.post('http://localhost:8080/customer/checkclaim', {
+    const {data} = await axios.post('https://bradpoints.dcism.org/customer/checkclaim', {
       rewardId
     }, {
       headers: { Authorization: `Bearer ${token}` }

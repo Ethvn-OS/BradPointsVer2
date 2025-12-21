@@ -9,7 +9,7 @@ export default function FeedbackTable() {
   const [allFeedback, setAllFeedback] = useState([]);
 
   const allFeed = async () => {
-    const response = await axios.get('http://localhost:8080/admin/allfeedback');
+    const response = await axios.get('https://bradpoints.dcism.org/admin/allfeedback');
     setAllFeedback(response.data.allfeedback);
     console.log(response.data.allfeedback);
   }

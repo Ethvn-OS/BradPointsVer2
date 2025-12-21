@@ -24,13 +24,13 @@ export default function RewardsPage() {
   const [allRewards, setAllRewards] = useState([]);
 
   const countRew = async () => {
-    const response = await axios.get("http://localhost:8080/admin/countreward");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/countreward");
     setCountAllRewards(response.data.count);
     console.log(response.data.count);
   }
 
   const allRew = async () => {
-    const response = await axios.get("http://localhost:8080/admin/allrewards");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/allrewards");
     setAllRewards(response.data.allrewards);
     console.log(response.data.allrewards);
   }

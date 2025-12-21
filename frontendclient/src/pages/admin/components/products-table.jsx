@@ -96,7 +96,7 @@ export default function ProductsTable({ products: propsProducts, onProductsChang
   const handleEditProductSubmit = async ({id, editProd, editCategory}) => {
 
     try {
-      const response = await axios.post('http://localhost:8080/admin/updateprod', {
+      const response = await axios.post('https://bradpoints.dcism.org/admin/updateprod', {
         editId: id,
         editProd,
         editCategory
@@ -126,7 +126,7 @@ export default function ProductsTable({ products: propsProducts, onProductsChang
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8080/admin/deleteprod', {
+      const response = await axios.post('https://bradpoints.dcism.org/admin/deleteprod', {
         deleteId: productToDelete
       });
       console.log(response);

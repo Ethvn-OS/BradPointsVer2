@@ -44,7 +44,7 @@ const Home = () => {
                 return;
             }
             
-            const response = await axios.get('http://localhost:8080/customer/home', {
+            const response = await axios.get('https://bradpoints.dcism.org/customer/home', {
                 headers: {
                     "Authorization" : `Bearer ${token}`
                 }
@@ -76,7 +76,7 @@ const Home = () => {
                 setRewards(mockData.rewards);
                 return;
             }
-            const response = await axios.get('http://localhost:8080/customer/rewards', {
+            const response = await axios.get('https://bradpoints.dcism.org/customer/rewards', {
                 headers: {
                     "Authorization" : `Bearer ${token}`
                 }
@@ -99,7 +99,7 @@ const Home = () => {
             const token = localStorage.getItem('token');
             if (!token) return setVouchers(mockData.vouchers);
 
-            const res = await axios.get('http://localhost:8080/customer/vouchers', {
+            const res = await axios.get('https://bradpoints.dcism.org/customer/vouchers', {
             headers: { Authorization: `Bearer ${token}` }
             });
             setVouchers(res.data.vouchers || res.data || []);

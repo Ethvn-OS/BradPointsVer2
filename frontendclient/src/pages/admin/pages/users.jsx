@@ -42,31 +42,31 @@ export default function UsersPage() {
   const [listCashiers, setListCashiers] = useState([]);
 
   const numOfCustomers = async () => {
-    const response = await axios.get("http://localhost:8080/admin/countallcustomers");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/countallcustomers");
     setActiveCustomers(response.data.allcust);
     console.log(response.data.allcust);
   }
 
   const numOfCashiers = async () => {
-    const response = await axios.get("http://localhost:8080/admin/countallcashiers");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/countallcashiers");
     setActiveCashiers(response.data.allcash);
     console.log(response.data.allcash);
   }
 
   const sumOfPoints = async () => {
-    const response = await axios.get("http://localhost:8080/admin/countallpoints");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/countallpoints");
     setSumPoints(response.data.sumPoints);
     console.log(response.data.sumPoints);
   }
 
   const listOfCustomers = async () => {
-    const response = await axios.get("http://localhost:8080/admin/allcustomers");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/allcustomers");
     setListCustomers(response.data.allcustomers);
     console.log(response.data.allcustomers);
   }
 
   const listOfCashiers = async () => {
-    const response = await axios.get("http://localhost:8080/admin/allcashiers");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/allcashiers");
     setListCashiers(response.data.allcashiers);
     console.log(response.data.allcashiers);
   }

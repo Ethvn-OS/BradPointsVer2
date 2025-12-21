@@ -14,7 +14,7 @@ const ClientFeedbackForm = ({ onGoBack, onFormSubmitSuccess }) => {
     // Simulate API call
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8080/customer/savefeedback', {
+      const response = await axios.post('https://bradpoints.dcism.org/customer/savefeedback', {
         rating: rating,
         feedback: message
       }, {

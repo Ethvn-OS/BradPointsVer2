@@ -26,7 +26,7 @@ function RedeemVoucher({ onGoBack, customerId }) {
 
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.post('http://localhost:8080/cashier/cashierredeem', {
+      const response = await axios.post('https://bradpoints.dcism.org/cashier/cashierredeem', {
         redeemvouch: voucherCode,
         customerId: customerId
       }, {

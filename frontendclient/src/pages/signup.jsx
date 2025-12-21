@@ -78,7 +78,7 @@ const Signup = () => {
     }
     
     try {
-      const response = await axios.post('http://localhost:8080/auth/signup', values);
+      const response = await axios.post('https://bradpoints.dcism.org/auth/signup', values);
       console.log(response);
       if (response.status === 201) {
         showNotification('Account created successfully! Redirecting to login...', 'success');

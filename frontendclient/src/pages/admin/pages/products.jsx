@@ -27,31 +27,31 @@ export default function ProductsPage() {
   const [allProducts, setAllProducts] = useState([]);
 
   const numOfProducts = async () => {
-    const response = await axios.get("http://localhost:8080/admin/countallprod");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/countallprod");
     setTotalNumProducts(response.data.allprod);
     console.log(response.data.allprod);
   }
 
   const numRice = async () => {
-    const response = await axios.get("http://localhost:8080/admin/countallrice");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/countallrice");
     setTotalRice(response.data.allrice);
     console.log(response.data.allrice);
   }
 
   const numRolls = async () => {
-    const response = await axios.get("http://localhost:8080/admin/countallrolls");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/countallrolls");
     setTotalRolls(response.data.allrolls);
     console.log(response.data.allrolls);
   }
 
   const numSide = async () => {
-    const response = await axios.get("http://localhost:8080/admin/countallside");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/countallside");
     setTotalSide(response.data.allside);
     console.log(response.data.allside);
   }
 
   const allProd = async () => {
-    const response = await axios.get("http://localhost:8080/admin/allproducts");
+    const response = await axios.get("https://bradpoints.dcism.org/admin/allproducts");
     setAllProducts(response.data.allprods);
     console.log(response.data.allprods);
   }

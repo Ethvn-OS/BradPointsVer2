@@ -30,7 +30,7 @@ const RestaurantOrderingUI = ({ onGoBack, customerId }) => {
   }, []);
 
   const allMenu = async () => {
-    const response = await axios.get("http://localhost:8080/cashier/cashierprod");
+    const response = await axios.get("https://bradpoints.dcism.org/cashier/cashierprod");
     setMenuItems(response.data.products);
     console.log(response.data.products);
   }
@@ -52,7 +52,7 @@ const RestaurantOrderingUI = ({ onGoBack, customerId }) => {
         }))
       };
 
-      const response = await axios.post('http://localhost:8080/cashier/cashierorder', orderData);
+      const response = await axios.post('https://bradpoints.dcism.org/cashier/cashierorder', orderData);
 
       if (response.data.success) {
         setSubmitMessage(response.data.message);

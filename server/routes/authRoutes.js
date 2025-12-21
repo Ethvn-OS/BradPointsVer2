@@ -22,9 +22,9 @@ router.post('/signup', async (req, res) => {
         await db.query('INSERT INTO users (user_name, email, password) VALUES (?, ?, ?)', [username, email, hashPassword]);
         await db.query('INSERT INTO customers (user_id) SELECT id FROM users WHERE user_name = ?', [username]);
 
-        res.status(201).json({message : "User created sucessfully!"});
+        return res.status(201).json({message : "User created sucessfully!"});
     } catch (err) {
-        res.status(500).json(err.message);
+        return res.status(500).json(err.message);
     }
 });
 
@@ -46,12 +46,12 @@ router.post('/login', async (req, res) => {
 
         const token = jwt.sign({id: rows[0].user_id}, process.env.JWT_KEY, {expiresIn: '3h'});
 
-        res.status(201).json({token: token,
+        return res.status(201).json({token: token,
                               message: "Successfully logged in!",
                               usertype: rows[0].usertype_id
         });
     } catch (err) {
-        res.status(500).json(err.message);
+        return res.status(500).json(err.message);
     }
 });
 
